@@ -1,0 +1,239 @@
+/* Mobile-optimized styles for Cross-Dataset FER PWA */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #eee;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 8px 0 4px 0;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1f6feb, #58a6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+video {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: scaleX(-1); /* Mirror for selfie view */
+}
+
+canvas#overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1); /* Mirror to match video */
+}
+
+canvas#faceCanvas {
+  display: none;
+}
+
+.controls {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #1f6feb;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(31, 111, 235, 0.3);
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(31, 111, 235, 0.2);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.status {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #161b22;
+  color: #8b949e;
+}
+
+.status.success {
+  background: rgba(31, 111, 235, 0.2);
+  color: #58a6ff;
+}
+
+.status.error {
+  background: rgba(248, 81, 73, 0.2);
+  color: #ff7b72;
+}
+
+.predictions {
+  margin-top: 20px;
+  padding: 16px;
+  background: #161b22;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+}
+
+.predictions h2 {
+  font-size: 18px;
+  margin: 0 0 12px 0;
+  color: #c9d1d9;
+}
+
+.pred {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.pred .label {
+  min-width: 80px;
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+.pred .bar-container {
+  flex: 1;
+  height: 8px;
+  background: #21262d;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pred .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1f6feb, #58a6ff);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.pred .prob {
+  min-width: 50px;
+  text-align: right;
+  color: #8b949e;
+  font-size: 13px;
+}
+
+.ensemble-info {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #30363d;
+  text-align: center;
+}
+
+.ensemble-info small {
+  color: #8b949e;
+  font-size: 11px;
+}
+
+.install-prompt {
+  margin-top: 16px;
+  padding: 12px;
+  background: #1f6feb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.install-prompt p {
+  margin: 0 0 8px 0;
+  color: white;
+  font-size: 14px;
+}
+
+.install-prompt button {
+  background: white;
+  color: #1f6feb;
+  min-width: auto;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  main {
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .predictions {
+    padding: 12px;
+  }
+
+  button {
+    min-width: 120px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Prevent text selection on buttons */
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}

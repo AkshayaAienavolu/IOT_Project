@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FER Test Page</title>
+</head>
+<body>
+    <h1>FER Mobile - Diagnostic Test</h1>
+    
+    <h2>1. TensorFlow.js Test</h2>
+    <div id="tfjs-test">Loading...</div>
+    
+    <h2>2. Model Files Test</h2>
+    <div id="model-test">Testing...</div>
+    
+    <h2>3. MediaPipe Test</h2>
+    <div id="mediapipe-test">Loading...</div>
+    
+    <h2>4. Camera Test</h2>
+    <button onclick="testCamera()">Test Camera</button>
+    <div id="camera-test"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js"></script>
+    
+    <script>
+        // Test 1: TensorFlow.js
+        if (typeof tf !== 'undefined') {
+            document.getElementById('tfjs-test').innerHTML = '✓ TensorFlow.js loaded (version: ' + tf.version.tfjs + ')';
+        } else {
+            document.getElementById('tfjs-test').innerHTML = '✗ TensorFlow.js failed to load';
+        }
+        
+        // Test 2: Model files
+        fetch('./model/model.json')
+            .then(r => {
+                if (r.ok) {
+                    return r.json();
+                }
+                throw new Error('Model not found');
+            })
+            .then(data => {
+                document.getElementById('model-test').innerHTML = '✓ Model.json found (model: ' + (data.modelTopology ? 'loaded' : 'error') + ')';
+            })
+            .catch(err => {
+                document.getElementById('model-test').innerHTML = '✗ Model error: ' + err.message;
+            });
+        
+        // Test 3: MediaPipe
+        setTimeout(() => {
+            if (typeof FaceDetection !== 'undefined') {
+                document.getElementById('mediapipe-test').innerHTML = '✓ MediaPipe FaceDetection loaded';
+            } else {
+                document.getElementById('mediapipe-test').innerHTML = '✗ MediaPipe FaceDetection not loaded (check internet connection)';
+            }
+        }, 2000);
+        
+        // Test 4: Camera
+        async function testCamera() {
+            const div = document.getElementById('camera-test');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                div.innerHTML = '✓ Camera access granted';
+                stream.getTracks().forEach(track => track.stop());
+            } catch (err) {
+                div.innerHTML = '✗ Camera error: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
+

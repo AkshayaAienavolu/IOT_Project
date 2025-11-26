@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#1f6feb" />
+    <meta name="description" content="Cross-Dataset Facial Emotion Recognition - Runs entirely on your device" />
+    <title>FER Mobile - Cross-Dataset Emotion Recognition</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.json" />
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
+    <!-- MediaPipe drawing & camera utils (v0.4) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
+    <!-- MediaPipe Face Detection v0.4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>🎭 FER Mobile</h1>
+        <p class="subtitle">Cross-Dataset Ensemble • On-Device • No Server</p>
+      </header>
+
+      <div class="video-wrap">
+        <video id="video" playsinline autoplay muted></video>
+        <canvas id="overlay"></canvas>
+        <canvas id="faceCanvas"></canvas>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn">▶ Start Camera</button>
+        <button id="stopBtn" disabled>⏹ Stop</button>
+      </div>
+
+      <div id="status" class="status">Initializing...</div>
+
+      <div class="predictions">
+        <h2>Emotion Predictions</h2>
+        <div id="predList">—</div>
+        <div class="ensemble-info">
+          <small>✓ Cross-Dataset: ImageNet (14M) + FER2013 (35K)</small>
+        </div>
+      </div>
+
+      <div class="install-prompt" id="installPrompt" style="display: none;">
+        <p>📱 Install this app for better experience</p>
+        <button id="installBtn">Install App</button>
+      </div>
+    </main>
+
+    <!-- MQTT client (browser) - add credentials by copying mqtt_config.example.js -> mqtt_config.js -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="mqtt_config.js" defer></script>
+    <script src="mqtt_client.js" defer></script>
+    <script src="app.js"></script>
+  </body>
+</html>

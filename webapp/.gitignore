@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+*.egg-info/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.venv
+venv/
+env/
+fer_env/
+tfjs_clean_venv/
+tfjs_venv/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build & dist
+dist/
+build/
+*.tflite
+*.h5
+
+# Local testing
+.netlify/
+netlify.toml
+
+# Certs (keep local, don't push)
+cert.pem
+key.pem
+serve_https.py
+start_https.bat
+
+# Large files (model weights are in model/model.json + shards which are OK)
+# but exclude any backup/temp conversions
+convert_*.py
+*_backup.*
+*_old.*
