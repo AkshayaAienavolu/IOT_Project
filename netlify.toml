@@ -1,0 +1,11 @@
+[build]
+  # Publish directory - the webapp folder contains the HTML/JS/CSS
+  publish = "webapp"
+  
+  # No build command needed - it's a static site
+  command = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

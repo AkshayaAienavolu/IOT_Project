@@ -41,7 +41,6 @@ models/pretrained/*.h5
 
 # Local testing
 .netlify/
-netlify.toml
 
 # Certs (keep local, don't push)
 cert.pem
