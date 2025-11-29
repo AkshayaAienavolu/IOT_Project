@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#1f6feb" />
+    <meta name="description" content="Your Personal Emotion Dashboard" />
+    <title>My Dashboard - FER Mobile</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .dashboard-container {
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+
+      .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .dashboard-header h1 {
+        margin: 0 0 10px 0;
+        font-size: 2em;
+      }
+
+      .user-id-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        font-family: monospace;
+        font-size: 0.9em;
+        margin-top: 10px;
+      }
+
+      .nav-buttons {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .nav-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .nav-btn.secondary {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+      }
+
+      .chart-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .chart-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .chart-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        font-size: 1.1em;
+        font-weight: 600;
+      }
+
+      .chart-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #f8f9fa;
+      }
+
+      .summary-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+      }
+
+      .summary-card h2 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.5em;
+      }
+
+      .summary-text {
+        white-space: pre-wrap;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95em;
+        line-height: 1.8;
+        color: #555;
+      }
+
+      .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #667eea;
+        font-size: 1.2em;
+      }
+
+      .error-state {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #f5c6cb;
+        margin: 20px 0;
+      }
+
+      .no-data-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff3cd;
+        color: #856404;
+        border-radius: 15px;
+        border: 2px dashed #ffc107;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .stat-box {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: 700;
+        color: #667eea;
+        display: block;
+      }
+
+      .stat-label {
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .dashboard-header h1 {
+          font-size: 1.5em;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1>📊 My Emotion Dashboard</h1>
+        <p>View your personal emotion analytics</p>
+        <div class="user-id-badge" id="userIdDisplay">Loading...</div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">← Back to Camera</a>
+        <button class="nav-btn secondary" onclick="refreshDashboard()">🔄 Refresh Data</button>
+      </div>
+
+      <div id="dashboardContent">
+        <div class="loading-state">
+          <p>Loading your dashboard...</p>
+          <p style="font-size: 0.8em; margin-top: 10px;">Please wait while we fetch your data</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MQTT Client Scripts -->
+    <script src="https://unpkg.com/mqtt@5.3.0/dist/mqtt.min.js"></script>
+    <script src="mqtt_config.js"></script>
+    <script>
+      // Get the same user ID used in main app
+      function getClientId() {
+        let clientId = localStorage.getItem('fer_client_id');
+        if (!clientId) {
+          const randomBytes = new Uint8Array(8);
+          crypto.getRandomValues(randomBytes);
+          const hex = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+          clientId = 'fer_web_' + hex;
+          localStorage.setItem('fer_client_id', clientId);
+        }
+        return clientId;
+      }
+
+      const userId = getClientId();
+      document.getElementById('userIdDisplay').textContent = userId;
+
+      // Dashboard API base URL (will be configured based on your Pi IP)
+      const DASHBOARD_API = 'http://YOUR_PI_IP:5000';  // Update this with your Pi IP
+
+      async function loadDashboard() {
+        const contentDiv = document.getElementById('dashboardContent');
+        
+        try {
+          // Fetch user's summary
+          const response = await fetch(`${DASHBOARD_API}/api/user/${userId}/summary`);
+          
+          if (!response.ok) {
+            if (response.status === 404) {
+              contentDiv.innerHTML = `
+                <div class="no-data-state">
+                  <h2>No Data Yet</h2>
+                  <p>Start using the camera to collect emotion data!</p>
+                  <p style="margin-top: 15px;">
+                    <a href="index.html" class="nav-btn">Go to Camera →</a>
+                  </p>
+                </div>
+              `;
+              return;
+            }
+            throw new Error(`Server returned ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          // Build dashboard HTML
+          let html = '';
+
+          // Stats summary
+          if (data.stats) {
+            html += `
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <span class="stat-value">${data.stats.total_events}</span>
+                  <span class="stat-label">Total Events</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-value">${data.stats.top_emotion}</span>
+                  <span class="stat-label">Most Common</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-value">${data.stats.avg_confidence}%</span>
+                  <span class="stat-label">Avg Confidence</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-value">${data.stats.days_active}</span>
+                  <span class="stat-label">Days Active</span>
+                </div>
+              </div>
+            `;
+          }
+
+          // Summary text
+          if (data.summary) {
+            html += `
+              <div class="summary-card">
+                <h2>📈 Summary</h2>
+                <div class="summary-text">${data.summary}</div>
+              </div>
+            `;
+          }
+
+          // Charts
+          if (data.charts && data.charts.length > 0) {
+            html += '<div class="charts-grid">';
+            data.charts.forEach(chart => {
+              html += `
+                <div class="chart-card">
+                  <div class="chart-title">${chart.name}</div>
+                  <img src="${DASHBOARD_API}${chart.url}" 
+                       alt="${chart.name}" 
+                       class="chart-image"
+                       onerror="this.parentElement.innerHTML='<div style=padding:40px;text-align:center;color:#999>Chart not available</div>'">
+                </div>
+              `;
+            });
+            html += '</div>';
+          } else {
+            html += `
+              <div class="no-data-state">
+                <p>No charts available yet. Charts are generated every 5 minutes.</p>
+                <p style="margin-top: 10px;">
+                  <button class="nav-btn" onclick="refreshDashboard()">Refresh Dashboard</button>
+                </p>
+              </div>
+            `;
+          }
+
+          contentDiv.innerHTML = html;
+
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+          contentDiv.innerHTML = `
+            <div class="error-state">
+              <h3>⚠️ Unable to Load Dashboard</h3>
+              <p>Error: ${error.message}</p>
+              <p style="margin-top: 15px;">
+                Make sure the dashboard server is running on your Raspberry Pi.<br>
+                Update the <code>DASHBOARD_API</code> URL in this page with your Pi's IP address.
+              </p>
+              <p style="margin-top: 10px;">
+                <button class="nav-btn" onclick="refreshDashboard()">Try Again</button>
+              </p>
+            </div>
+          `;
+        }
+      }
+
+      function refreshDashboard() {
+        document.getElementById('dashboardContent').innerHTML = `
+          <div class="loading-state">
+            <p>Refreshing your dashboard...</p>
+          </div>
+        `;
+        setTimeout(loadDashboard, 500);
+      }
+
+      // Load dashboard on page load
+      window.addEventListener('load', loadDashboard);
+
+      // Auto-refresh every 2 minutes
+      setInterval(refreshDashboard, 120000);
+    </script>
+  </body>
+</html>
