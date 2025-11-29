@@ -287,34 +287,6 @@ def main():
     print(f'\nUser dashboards:')
     for user_id in all_users:
         folder = user_id.replace('/', '_')
-        print(f'  - {OUTPUT_DIR}/{folder}/')data, user_folder)
-    
-    # Generate overall summary
-    print(f'\n📊 Generating overall summary...')
-    
-    with open(f'{OUTPUT_DIR}/OVERALL_SUMMARY.txt', 'w') as f:
-        f.write('OVERALL EMOTION ANALYSIS\n')
-        f.write('='*60 + '\n\n')
-        f.write(f'Total Events: {len(all_data)}\n')
-        f.write(f'Unique Users: {len(users)}\n\n')
-        
-        f.write('Per-User Event Counts:\n')
-        for user_id in users:
-            count = len(get_user_data(all_data, user_id))
-            f.write(f'  {user_id}: {count}\n')
-        
-        f.write(f'\nOverall Emotion Distribution:\n')
-        all_emotions = [row[2] for row in all_data]
-        overall_counts = Counter(all_emotions)
-        for emotion, count in overall_counts.most_common():
-            pct = (count / len(all_data)) * 100
-            f.write(f'  {emotion:10s}: {count:5d} ({pct:5.1f}%)\n')
-    
-    print(f'\n✅ Dashboard generation complete!')
-    print(f'📂 Output directory: {OUTPUT_DIR}/')
-    print(f'\nUser dashboards:')
-    for user_id in users:
-        folder = user_id.replace('/', '_')
         print(f'  - {OUTPUT_DIR}/{folder}/')
 
 if __name__ == '__main__':
