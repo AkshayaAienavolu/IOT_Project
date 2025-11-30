@@ -251,15 +251,36 @@ def main():
     for user_id in all_users:
         # Get user's 2-day data for charts
         user_data = get_user_data(chart_data, user_id)
+        user_folder = os.path.join(OUTPUT_DIR, user_id.replace('/', '_'))
         
         # Skip if no data in last 2 days, but still create report with 7-day mental state
         if len(user_data) == 0:
             print(f'\n⚠️  User {user_id}: No activity in last 2 days (charts skipped, mental state only)')
-            user_folder = os.path.join(OUTPUT_DIR, user_id.replace('/', '_'))
             os.makedirs(user_folder, exist_ok=True)
             
             # Create summary with mental state only
             conn = sqlite3.connect(DB_PATH)
+            cur = conn.cursor()
+            cutoff_7d = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%SZ')
+            cur.execute('SELECT emotion FROM events WHERE user_id = ? AND ts_received >= ?', (user_id, cutoff_7d))
+            week_emotions = [row[0] for row in cur.fetchall()]
+            conn.close()
+            
+            week_counts = Counter(week_emotions)
+            mental_state, _, advice = calculate_mental_state(week_counts, len(week_emotions))
+            
+            with open(f'{user_folder}/summary.txt', 'w') as f:
+                f.write(f'MENTAL STATE REPORT (7-Day Analysis)\n')
+                f.write(f'User: {user_id}\n')
+                f.write(f'='*60 + '\n\n')
+                f.write(f'Mental State: {mental_state}\n')
+                f.write(f'Total Events: {len(week_emotions)}\n\n')
+                f.write(f'Recommendation:\n{advice}\n')
+            continue
+        
+        # User has data in last 2 days - create full dashboard
+        create_user_dashboard(user_id, user_data, user_folder)
+    
     # Generate overall summary
     print(f'\n📊 Generating overall summary...')
     
