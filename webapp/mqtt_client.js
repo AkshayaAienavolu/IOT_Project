@@ -16,24 +16,56 @@
   let client = null;
 
   // Ensure a stable client id per browser/device: prefer configured CLIENT_ID,
-  // otherwise persist a generated id to localStorage so the same user/device keeps the id.
+  // otherwise persist a generated id to localStorage AND cookie for extra persistence
   function ensureClientId() {
     try {
       if (cfg.CLIENT_ID) return cfg.CLIENT_ID;
       const key = 'fer_client_id';
       let id = null;
+      
+      // Try localStorage first
       try { id = localStorage.getItem(key); } catch (e) { /* localStorage may be unavailable */ }
+      
+      // If not in localStorage, try cookie as backup
+      if (!id) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === key) {
+            id = value;
+            break;
+          }
+        }
+      }
+      
+      // Generate new ID if still not found
       if (!id) {
         // Use crypto-safe id when available
         if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
           const buf = new Uint8Array(8);
           crypto.getRandomValues(buf);
-          id = 'fer_web_' + Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+          id = 'fer_webapp_' + Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
         } else {
-          id = 'fer_web_' + Math.random().toString(16).slice(2, 10);
+          id = 'fer_webapp_' + Math.random().toString(16).slice(2, 10);
         }
+        
+        // Store in BOTH localStorage AND cookie (365 days expiry)
         try { localStorage.setItem(key, id); } catch (e) { /* ignore write errors */ }
+        try {
+          const expires = new Date();
+          expires.setFullYear(expires.getFullYear() + 1);
+          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+        } catch (e) { /* ignore cookie errors */ }
+      } else {
+        // ID found, ensure it's in both storages
+        try { localStorage.setItem(key, id); } catch (e) { /* ignore */ }
+        try {
+          const expires = new Date();
+          expires.setFullYear(expires.getFullYear() + 1);
+          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+        } catch (e) { /* ignore */ }
       }
+      
       cfg.CLIENT_ID = id;
       return id;
     } catch (e) {
