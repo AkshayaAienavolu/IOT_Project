@@ -57,7 +57,12 @@
           document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
         } catch (e) { /* ignore cookie errors */ }
       } else {
-        // ID found, ensure it's in both storages
+        // MIGRATE OLD IDs: if id starts with 'fer_web_' (old format), update to 'fer_webapp_'
+        if (id.startsWith('fer_web_') && !id.startsWith('fer_webapp_')) {
+          id = id.replace('fer_web_', 'fer_webapp_');
+        }
+        
+        // ID found, ensure it's in both storages (with migrated format)
         try { localStorage.setItem(key, id); } catch (e) { /* ignore */ }
         try {
           const expires = new Date();
@@ -69,8 +74,8 @@
       cfg.CLIENT_ID = id;
       return id;
     } catch (e) {
-      // Fallback
-      cfg.CLIENT_ID = cfg.CLIENT_ID || ('fer_web_' + Math.random().toString(16).slice(2, 8));
+      // Fallback with correct prefix
+      cfg.CLIENT_ID = cfg.CLIENT_ID || ('fer_webapp_' + Math.random().toString(16).slice(2, 10));
       return cfg.CLIENT_ID;
     }
   }
