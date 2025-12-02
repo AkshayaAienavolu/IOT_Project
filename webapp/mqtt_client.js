@@ -17,9 +17,10 @@
 
   // Ensure a stable client id per browser/device: prefer configured CLIENT_ID,
   // otherwise persist a generated id to localStorage AND cookie for extra persistence
+  // EXPORTED to window.ensureClientId for reuse in other pages
   function ensureClientId() {
     try {
-      if (cfg.CLIENT_ID) return cfg.CLIENT_ID;
+      if (cfg && cfg.CLIENT_ID) return cfg.CLIENT_ID;
       const key = 'fer_client_id';
       let id = null;
       
@@ -71,14 +72,18 @@
         } catch (e) { /* ignore */ }
       }
       
-      cfg.CLIENT_ID = id;
+      if (cfg) cfg.CLIENT_ID = id;
       return id;
     } catch (e) {
       // Fallback with correct prefix
-      cfg.CLIENT_ID = cfg.CLIENT_ID || ('fer_webapp_' + Math.random().toString(16).slice(2, 10));
-      return cfg.CLIENT_ID;
+      const fallbackId = 'fer_webapp_' + Math.random().toString(16).slice(2, 10);
+      if (cfg) cfg.CLIENT_ID = fallbackId;
+      return fallbackId;
     }
   }
+  
+  // Export for use in other pages (e.g., dashboard.html)
+  window.ensureClientId = ensureClientId;
 
   function connect() {
     try {

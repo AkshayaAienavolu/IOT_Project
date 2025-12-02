@@ -150,6 +150,22 @@
         border-radius: 15px;
         border: 2px dashed #ffc107;
       }
+      
+      .no-data-state h2 {
+        margin-top: 0;
+      }
+      
+      .no-data-state ol {
+        text-align: left;
+        display: inline-block;
+        margin: 15px auto;
+        padding-left: 20px;
+      }
+      
+      .no-data-state li {
+        margin: 8px 0;
+        line-height: 1.6;
+      }
 
       .stats-grid {
         display: grid;
@@ -217,25 +233,29 @@
     <!-- MQTT Client Scripts -->
     <script src="https://unpkg.com/mqtt@5.3.0/dist/mqtt.min.js"></script>
     <script src="mqtt_config.js"></script>
+    <script src="mqtt_client.js"></script>
     <script>
-      // Get the same user ID used in main app
-      function getClientId() {
-        let clientId = localStorage.getItem('fer_client_id');
-        if (!clientId) {
-          const randomBytes = new Uint8Array(8);
-          crypto.getRandomValues(randomBytes);
-          const hex = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-          clientId = 'fer_web_' + hex;
-          localStorage.setItem('fer_client_id', clientId);
-        }
-        return clientId;
+      // Use the same client ID logic as main app (imported from mqtt_client.js)
+      let userId = '';
+      try {
+        // ensureClientId is exported by mqtt_client.js
+        userId = window.ensureClientId ? window.ensureClientId() : 'unknown';
+      } catch (e) {
+        console.error('Failed to get client ID:', e);
+        userId = 'error_' + Math.random().toString(16).slice(2, 10);
       }
-
-      const userId = getClientId();
+      
       document.getElementById('userIdDisplay').textContent = userId;
 
       // Dashboard API base URL (will be configured based on your Pi IP)
       const DASHBOARD_API = 'http://10.249.21.195:5000';  // Update this with your Pi IP
+      
+      // Helper: Check if browser allows local network access
+      function checkNetworkPermission() {
+        // Modern browsers require explicit permission for local network requests from HTTPS sites
+        // We'll detect failures and guide the user
+        return true; // Will be caught in fetch error handling
+      }
 
       async function loadDashboard() {
         const contentDiv = document.getElementById('dashboardContent');
@@ -248,8 +268,15 @@
             if (response.status === 404) {
               contentDiv.innerHTML = `
                 <div class="no-data-state">
-                  <h2>No Data Yet</h2>
-                  <p>Start using the camera to collect emotion data!</p>
+                  <h2>📊 No Data Yet</h2>
+                  <p>Start using the camera for 30-60 seconds to collect emotion data!</p>
+                  <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                    Make sure to:<br>
+                    ✓ Allow camera access<br>
+                    ✓ Look at the camera with your face visible<br>
+                    ✓ Stay connected to WiFi<br>
+                    ✓ Wait a few minutes for data processing
+                  </p>
                   <p style="margin-top: 15px;">
                     <a href="index.html" class="nav-btn">Go to Camera →</a>
                   </p>
@@ -261,6 +288,13 @@
           }
 
           const data = await response.json();
+          
+          // Update userId if server matched to a different ID (handles format mismatches)
+          if (data.used_user_id && data.used_user_id !== userId) {
+            console.log(`Server matched ${userId} to ${data.used_user_id}`);
+            userId = data.used_user_id;
+            document.getElementById('userIdDisplay').textContent = userId + ' (matched)';
+          }
 
           // Build dashboard HTML
           let html = '';
@@ -329,15 +363,39 @@
 
         } catch (error) {
           console.error('Error loading dashboard:', error);
-          contentDiv.innerHTML = `
-            <div class="error-state">
+          
+          // Detect common error types
+          let errorHelp = '';
+          if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+            errorHelp = `
+              <h3>🔒 Network Permission Issue</h3>
+              <p><strong>Please allow local network access for this site:</strong></p>
+              <ol style="text-align: left; display: inline-block; margin: 15px auto;">
+                <li><strong>iPhone/iPad:</strong> Settings → Safari → scroll to this site → Allow local network access</li>
+                <li><strong>Android Chrome:</strong> Site settings → Permissions → Allow access to devices on local network</li>
+                <li><strong>Desktop:</strong> Check firewall settings and ensure you're on the same WiFi as the Pi</li>
+              </ol>
+              <p style="margin-top: 15px;">Also verify:<br>
+                ✓ Dashboard server is running on Pi: <code>python3 dashboard_server.py</code><br>
+                ✓ You're connected to the same WiFi network as the Pi<br>
+                ✓ Pi IP address is correct: <code>${DASHBOARD_API}</code>
+              </p>
+            `;
+          } else {
+            errorHelp = `
               <h3>⚠️ Unable to Load Dashboard</h3>
               <p>Error: ${error.message}</p>
               <p style="margin-top: 15px;">
                 Make sure the dashboard server is running on your Raspberry Pi.<br>
                 Update the <code>DASHBOARD_API</code> URL in this page with your Pi's IP address.
               </p>
-              <p style="margin-top: 10px;">
+            `;
+          }
+          
+          contentDiv.innerHTML = `
+            <div class="error-state">
+              ${errorHelp}
+              <p style="margin-top: 20px;">
                 <button class="nav-btn" onclick="refreshDashboard()">Try Again</button>
               </p>
             </div>
