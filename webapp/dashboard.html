@@ -232,14 +232,25 @@
 
     <!-- MQTT Client Scripts -->
     <script src="https://unpkg.com/mqtt@5.3.0/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js"></script>
-    <script src="mqtt_client.js"></script>
+    <script src="mqtt_config.js?v=2"></script>
+    <script src="mqtt_client.js?v=2"></script>
     <script>
+      // Force ID migration immediately on page load
+      console.log('[Dashboard] Checking client ID migration...');
+      
       // Use the same client ID logic as main app (imported from mqtt_client.js)
       let userId = '';
       try {
         // ensureClientId is exported by mqtt_client.js
         userId = window.ensureClientId ? window.ensureClientId() : 'unknown';
+        console.log('[Dashboard] Client ID obtained:', userId);
+        
+        // Verify ID format
+        if (userId.startsWith('fer_web_') && !userId.startsWith('fer_webapp_')) {
+          console.warn('[Dashboard] Old ID format detected! Migration should have happened.');
+        } else if (userId.startsWith('fer_webapp_')) {
+          console.log('[Dashboard] ✓ Correct ID format');
+        }
       } catch (e) {
         console.error('Failed to get client ID:', e);
         userId = 'error_' + Math.random().toString(16).slice(2, 10);

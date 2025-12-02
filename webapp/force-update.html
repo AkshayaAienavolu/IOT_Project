@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Update - FER Mobile</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .id-display {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 16px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: 600;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔄 Force Update Required</h1>
+        
+        <p><strong>Your browser is showing an old cached version of the app.</strong></p>
+        
+        <div id="currentIdDisplay" class="id-display">
+            Checking your current ID...
+        </div>
+        
+        <div id="statusMessage"></div>
+        
+        <div class="instructions">
+            <h3>📱 How to Fix (Choose your device):</h3>
+            
+            <h4>iPhone/iPad Safari:</h4>
+            <ol>
+                <li>Close this tab completely</li>
+                <li>Force quit Safari: Swipe up from bottom, swipe Safari away</li>
+                <li>Reopen Safari and visit the site again</li>
+            </ol>
+            
+            <h4>Android Chrome:</h4>
+            <ol>
+                <li>Tap the three dots menu (⋮)</li>
+                <li>Tap "Settings" → "Privacy and security"</li>
+                <li>Tap "Clear browsing data"</li>
+                <li>Select "Cached images and files" ONLY</li>
+                <li>Tap "Clear data"</li>
+                <li>Reload the dashboard page</li>
+            </ol>
+            
+            <h4>Desktop (PC/Mac):</h4>
+            <ol>
+                <li><strong>Windows:</strong> Press <code>Ctrl + Shift + R</code> or <code>Ctrl + F5</code></li>
+                <li><strong>Mac:</strong> Press <code>Cmd + Shift + R</code></li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="forceReload()">🔄 Force Reload Now</button>
+            <button class="btn-secondary" onclick="clearAndReload()">🗑️ Clear Cache & Reload</button>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="window.location.href='dashboard.html'">📊 Go to Dashboard</button>
+            <button class="btn-secondary" onclick="window.location.href='index.html'">📹 Go to Camera</button>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+            <h3>🔧 Advanced: Manual Migration</h3>
+            <p>If the above doesn't work, open browser console (F12) and run:</p>
+            <div class="id-display">
+                <code>localStorage.setItem('fer_client_id', localStorage.getItem('fer_client_id').replace('fer_web_', 'fer_webapp_'))</code>
+            </div>
+            <button onclick="manualMigrate()">▶️ Run Migration Now</button>
+        </div>
+    </div>
+
+    <script src="mqtt_config.js?v=2"></script>
+    <script src="mqtt_client.js?v=2"></script>
+    <script>
+        function checkCurrentId() {
+            let id = 'UNKNOWN';
+            let status = 'checking';
+            
+            // Try localStorage
+            try {
+                const lsId = localStorage.getItem('fer_client_id');
+                if (lsId) {
+                    id = lsId;
+                    
+                    if (lsId.startsWith('fer_webapp_')) {
+                        status = 'correct';
+                    } else if (lsId.startsWith('fer_web_')) {
+                        status = 'needs_migration';
+                    } else {
+                        status = 'unknown_format';
+                    }
+                }
+            } catch (e) {
+                status = 'error';
+            }
+            
+            // Display
+            const display = document.getElementById('currentIdDisplay');
+            const statusMsg = document.getElementById('statusMessage');
+            
+            display.innerHTML = `<strong>Your Current ID:</strong><br>${id}`;
+            
+            if (status === 'correct') {
+                statusMsg.innerHTML = `
+                    <div class="status success">
+                        <strong>✅ ID Format is Correct!</strong><br>
+                        Your ID is in the new format (<code>fer_webapp_</code>).<br>
+                        If you still see errors, check the instructions below.
+                    </div>
+                `;
+            } else if (status === 'needs_migration') {
+                statusMsg.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ OLD ID FORMAT DETECTED!</strong><br>
+                        Your ID still has the old <code>fer_web_</code> prefix.<br>
+                        This means your browser has <strong>cached JavaScript files</strong>.<br>
+                        <strong>Follow the instructions below to clear cache!</strong>
+                    </div>
+                `;
+            } else {
+                statusMsg.innerHTML = `
+                    <div class="status warning">
+                        <strong>⚠️ Unable to check ID</strong><br>
+                        Error: ${status}
+                    </div>
+                `;
+            }
+        }
+        
+        function forceReload() {
+            // Hard reload with cache bypass
+            window.location.reload(true);
+        }
+        
+        function clearAndReload() {
+            // Try to clear service worker cache if exists
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            
+            // Hard reload
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 500);
+        }
+        
+        function manualMigrate() {
+            try {
+                const oldId = localStorage.getItem('fer_client_id');
+                if (!oldId) {
+                    alert('No ID found in localStorage');
+                    return;
+                }
+                
+                if (oldId.startsWith('fer_web_') && !oldId.startsWith('fer_webapp_')) {
+                    const newId = oldId.replace('fer_web_', 'fer_webapp_');
+                    localStorage.setItem('fer_client_id', newId);
+                    
+                    // Also update cookie
+                    const expires = new Date();
+                    expires.setFullYear(expires.getFullYear() + 1);
+                    document.cookie = `fer_client_id=${newId}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+                    
+                    alert(`✅ Migrated!\n\nOld: ${oldId}\nNew: ${newId}\n\nReloading page...`);
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    alert('ID is already in correct format: ' + oldId);
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // Check on page load
+        window.addEventListener('load', checkCurrentId);
+    </script>
+</body>
+</html>
