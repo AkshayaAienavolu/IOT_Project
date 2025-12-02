@@ -47,6 +47,43 @@ def get_all_users():
         print(f"Error fetching users: {e}")
         return []
 
+def find_best_user_match(requested_id):
+    """Try to find a close matching user id in the database.
+    - Return requested_id if it exists
+    - Otherwise try suffix matching and return the most-recent user if found
+    - Return None if no match
+    """
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+
+        # Exact match first
+        cur.execute("SELECT DISTINCT user_id FROM events WHERE user_id = ?", (requested_id,))
+        row = cur.fetchone()
+        if row:
+            conn.close()
+            return requested_id
+
+        # Suffix match: use last segment after underscore or last 8 chars
+        suffix = requested_id.split('_')[-1]
+
+        # Look for any user_id that ends with the same suffix, pick most recent activity
+        cur.execute("""
+            SELECT user_id, MAX(ts_received) as last_seen
+            FROM events
+            WHERE user_id LIKE ? OR user_id LIKE ?
+            GROUP BY user_id
+            ORDER BY last_seen DESC
+            LIMIT 1
+        """, (f"%{suffix}", f"%{suffix[-8:]}"))
+        row = cur.fetchone()
+        conn.close()
+        if row:
+            return row[0]
+    except Exception as e:
+        print(f"Error in find_best_user_match: {e}")
+    return None
+
 def regenerate_dashboards():
     """Regenerate all dashboard charts"""
     try:
@@ -93,11 +130,17 @@ def serve_dashboard(filename):
 @app.route('/user/<user_id>')
 def user_dashboard(user_id):
     """Display dashboard for specific user"""
-    # Check if user directory exists
+    # Prefer exact folder, otherwise try to find a best match by suffix
     user_dir = os.path.join(DASHBOARD_DIR, user_id)
+    displayed_user_id = user_id
     if not os.path.exists(user_dir):
-        return f"No dashboard found for user {user_id}. Click 'Regenerate Dashboards' to create charts.", 404
-    
+        matched = find_best_user_match(user_id)
+        if matched and matched != user_id:
+            user_dir = os.path.join(DASHBOARD_DIR, matched)
+            displayed_user_id = matched
+        else:
+            return f"No dashboard found for user {user_id}. Click 'Regenerate Dashboards' to create charts.", 404
+
     # Get list of chart files
     charts = []
     chart_files = ['emotion_distribution.png', 'timeline.png', 'confidence.png', 'hourly_activity.png']
@@ -106,18 +149,24 @@ def user_dashboard(user_id):
         if os.path.exists(chart_path):
             charts.append({
                 'name': chart_file.replace('.png', '').replace('_', ' ').title(),
-                'url': f'/dashboards/{user_id}/{chart_file}'
+                'url': f'/dashboards/{displayed_user_id}/{chart_file}'
             })
-    
+
     # Read summary text if exists
     summary_path = os.path.join(user_dir, 'summary.txt')
     summary = None
     if os.path.exists(summary_path):
         with open(summary_path, 'r') as f:
             summary = f.read()
-    
+
+    # If we matched to a different id, add a small notice
+    if displayed_user_id != user_id:
+        note = f"Note: showing data for '{displayed_user_id}' which closely matches your id '{user_id}'." \
+               " If you believe this is incorrect, please contact the admin."
+        summary = (note + '\n\n' + summary) if summary else note
+
     return render_template('user_dashboard.html', 
-                          user_id=user_id, 
+                          user_id=displayed_user_id, 
                           charts=charts, 
                           summary=summary)
 
@@ -144,7 +193,34 @@ def api_user_summary(user_id):
         conn.close()
         
         if not rows:
-            return jsonify({'error': 'User not found'}), 404
+            # Try to find a closely matching user id (suffix match)
+            matched = find_best_user_match(user_id)
+            if matched and matched != user_id:
+                # re-run query for matched user
+                conn = sqlite3.connect(DB_PATH)
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT COUNT(*) as total, 
+                           emotion,
+                           AVG(confidence) as avg_conf,
+                           MIN(ts_received) as first_seen,
+                           MAX(ts_received) as last_seen
+                    FROM events 
+                    WHERE user_id = ?
+                    GROUP BY user_id, emotion
+                    ORDER BY total DESC
+                """, (matched,))
+                rows = cursor.fetchall()
+                conn.close()
+                # If still empty, return not found
+                if not rows:
+                    return jsonify({'error': 'User not found'}), 404
+                # use matched id for response
+                used_user_id = matched
+            else:
+                return jsonify({'error': 'User not found'}), 404
+        else:
+            used_user_id = user_id
         
         # Calculate stats
         total_events = sum(row[0] for row in rows)
@@ -182,7 +258,7 @@ def api_user_summary(user_id):
                 summary = f.read()
         
         return jsonify({
-            'user_id': user_id,
+            'user_id': used_user_id,
             'stats': {
                 'total_events': total_events,
                 'top_emotion': top_emotion,
