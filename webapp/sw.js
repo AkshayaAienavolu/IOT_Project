@@ -1,12 +1,15 @@
 // Service Worker for PWA - Offline Support
-const CACHE_NAME = 'fer-mobile-v1';
+const CACHE_NAME = 'fer-mobile-v3';
 const urlsToCache = [
   '/',
   '/index.html',
   '/app.js',
   '/styles.css',
   '/manifest.json',
-  '/model/model.json'
+  '/model/model.json',
+  '/mqtt_client.js',
+  '/mqtt_config.js',
+  '/client_id_utils.js'
 ];
 
 // Install event - cache resources

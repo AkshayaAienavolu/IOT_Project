@@ -6,7 +6,7 @@ window.MQTT_CONFIG = {
   USERNAME: "feronmobile",
   // Replace the string below with the password you created in HiveMQ Cloud.
   PASSWORD: "Qwerty123",
-  CLIENT_ID: "fer_webapp_" + Math.random().toString(16).slice(2, 10),
+  CLIENT_ID: null,  // Auto-managed by mqtt_client.js
   TOPIC: "fer/events",
   QOS: 1
 };

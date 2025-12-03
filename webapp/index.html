@@ -32,7 +32,7 @@
       <div class="controls">
         <button id="startBtn">▶ Start Camera</button>
         <button id="stopBtn" disabled>⏹ Stop</button>
-        <a href="dashboard.html" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; margin-left: 10px;">📊 My Dashboard</a>
+        <a id="dashboardBtn" href="#" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; margin-left: 10px;">📊 My Dashboard</a>
       </div>
 
       <div id="status" class="status">Initializing...</div>
@@ -53,8 +53,44 @@
 
     <!-- MQTT client (browser) - add credentials by copying mqtt_config.example.js -> mqtt_config.js -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js?v=2" defer></script>
-    <script src="mqtt_client.js?v=2" defer></script>
-    <script src="app.js"></script>
+    <script src="mqtt_config.js?v=3" defer></script>
+    <script src="mqtt_client.js?v=3" defer></script>
+    <script src="app.js?v=3"></script>
+    <script>
+      // Configuration: Set your Raspberry Pi IP here
+      const PI_IP = '10.221.24.195'; 
+      const PI_PORT = '5000';
+
+      // Initialize MQTT connection on page load
+      window.addEventListener('load', function() {
+        // 1. Init MQTT
+        if (typeof window.initMqtt === 'function') {
+          window.initMqtt();
+          console.log('MQTT client initialized');
+        } else {
+          console.warn('initMqtt not available - check mqtt_client.js loaded');
+        }
+
+        // 2. Update Dashboard Link with User ID and Pi IP
+        const btn = document.getElementById('dashboardBtn');
+        if (btn) {
+            // Get ID from mqtt_client logic or storage
+            let userId = 'unknown';
+            try {
+                if (window.ensureClientId) {
+                    userId = window.ensureClientId();
+                } else {
+                    userId = localStorage.getItem('fer_client_id') || 'unknown';
+                }
+            } catch(e) { console.error(e); }
+
+            // Construct URL: http://<PI_IP>:5000/my-dashboard?user_id=<ID>
+            // We use the Pi's HTTP server directly to avoid Mixed Content issues
+            const dashboardUrl = `http://${PI_IP}:${PI_PORT}/my-dashboard?user_id=${userId}`;
+            btn.href = dashboardUrl;
+            console.log('Dashboard Link set to:', dashboardUrl);
+        }
+      });
+    </script>
   </body>
 </html>

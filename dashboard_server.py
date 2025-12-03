@@ -272,6 +272,26 @@ def api_user_summary(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# === WebApp Routes ===
+
+@app.route('/camera')
+def camera_app():
+    """Serve the camera app (index.html)"""
+    return send_from_directory('webapp', 'index.html')
+
+@app.route('/my-dashboard')
+def my_dashboard_app():
+    """Serve the personal dashboard app (dashboard.html)"""
+    return send_from_directory('webapp', 'dashboard.html')
+
+@app.route('/<path:filename>')
+def serve_webapp_static(filename):
+    """Serve static files from webapp directory"""
+    # Check if file exists in webapp
+    if os.path.exists(os.path.join('webapp', filename)):
+        return send_from_directory('webapp', filename)
+    return "File not found", 404
+
 if __name__ == '__main__':
     # Create dashboards directory if it doesn't exist
     os.makedirs(DASHBOARD_DIR, exist_ok=True)

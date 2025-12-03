@@ -232,8 +232,8 @@
 
     <!-- MQTT Client Scripts -->
     <script src="https://unpkg.com/mqtt@5.3.0/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js?v=2"></script>
-    <script src="mqtt_client.js?v=2"></script>
+    <script src="mqtt_config.js?v=3"></script>
+    <script src="mqtt_client.js?v=3"></script>
     <script>
       // Force ID migration immediately on page load
       console.log('[Dashboard] Checking client ID migration...');
@@ -255,22 +255,69 @@
         console.error('Failed to get client ID:', e);
         userId = 'error_' + Math.random().toString(16).slice(2, 10);
       }
+
+      // Check for user_id in URL params to override/set ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramId = urlParams.get('user_id');
+      if (paramId) {
+          console.log('[Dashboard] Setting ID from URL:', paramId);
+          userId = paramId;
+          // Persist it
+          try {
+              localStorage.setItem('fer_client_id', userId);
+              document.cookie = `fer_client_id=${userId}; path=/; max-age=31536000; SameSite=Strict`;
+              // Update config if it exists
+              if (window.MQTT_CONFIG) window.MQTT_CONFIG.CLIENT_ID = userId;
+          } catch(e) { console.error('Failed to save ID', e); }
+      }
       
       document.getElementById('userIdDisplay').textContent = userId;
 
-      // Dashboard API base URL (will be configured based on your Pi IP)
-      const DASHBOARD_API = 'http://10.221.24.195:5000';  // Update this with your Pi IP
+      // Dashboard API base URL
+      // If served from the dashboard server (port 5000), use current origin.
+      // Otherwise, fallback to localhost:5000 or the Pi IP.
+      let DASHBOARD_API = 'http://localhost:5000';
+      if (window.location.port === '5000') {
+        DASHBOARD_API = window.location.origin;
+      } else if (window.location.protocol === 'file:') {
+        // Keep default or use a known IP if needed
+        // DASHBOARD_API = 'http://10.221.24.195:5000'; 
+      }
+      console.log('[Dashboard] Using API:', DASHBOARD_API);
       
       // Helper: Check if browser allows local network access
       function checkNetworkPermission() {
-        // Modern browsers require explicit permission for local network requests from HTTPS sites
-        // We'll detect failures and guide the user
-        return true; // Will be caught in fetch error handling
+        // Check for Mixed Content (HTTPS -> HTTP)
+        if (window.location.protocol === 'https:' && DASHBOARD_API.startsWith('http:')) {
+            console.warn('Mixed Content Warning: Cannot fetch HTTP API from HTTPS page.');
+            return false;
+        }
+        return true; 
       }
 
       async function loadDashboard() {
         const contentDiv = document.getElementById('dashboardContent');
         
+        // Check for Mixed Content issue immediately
+        if (!checkNetworkPermission()) {
+             contentDiv.innerHTML = `
+                <div class="error-state">
+                  <h3>🔒 Security Restriction</h3>
+                  <p>You are viewing this page via <strong>HTTPS</strong> (Netlify), but the dashboard server is on <strong>HTTP</strong> (Raspberry Pi).</p>
+                  <p>Browsers block this connection for security.</p>
+                  <p style="margin-top: 15px;"><strong>Solution:</strong></p>
+                  <ul style="text-align: left; display: inline-block; margin: 10px auto;">
+                    <li>Use the local dashboard served by your Pi: <br>
+                        <a href="http://${DASHBOARD_API.split('//')[1]}/my-dashboard" style="color: #721c24; font-weight: bold;">
+                            http://${DASHBOARD_API.split('//')[1]}/my-dashboard
+                        </a>
+                    </li>
+                  </ul>
+                </div>
+              `;
+              return;
+        }
+
         try {
           // Fetch user's summary
           const response = await fetch(`${DASHBOARD_API}/api/user/${userId}/summary`);
