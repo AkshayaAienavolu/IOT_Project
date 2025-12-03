@@ -218,7 +218,7 @@
       </div>
 
       <div class="nav-buttons">
-        <a href="index.html" class="nav-btn">← Back to Camera</a>
+        <a id="backToCameraBtn" href="#" class="nav-btn">← Back to Camera</a>
         <button class="nav-btn secondary" onclick="refreshDashboard()">🔄 Refresh Data</button>
       </div>
 
@@ -232,8 +232,8 @@
 
     <!-- MQTT Client Scripts -->
     <script src="https://unpkg.com/mqtt@5.3.0/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js?v=3"></script>
-    <script src="mqtt_client.js?v=3"></script>
+    <script src="mqtt_config.js?v=5"></script>
+    <script src="mqtt_client.js?v=5"></script>
     <script>
       // Force ID migration immediately on page load
       console.log('[Dashboard] Checking client ID migration...');
@@ -475,6 +475,20 @@
 
       // Auto-refresh every 2 minutes
       setInterval(refreshDashboard, 120000);
+
+      // Fix "Back to Camera" link to point to Netlify (HTTPS)
+      // This prevents the user from going back to the HTTP version of the camera which fails
+      const NETLIFY_URL = 'https://iotprojectfer.netlify.app/';
+      const backBtn = document.getElementById('backToCameraBtn');
+      if (backBtn) {
+          // Append user_id to ensure identity persists when switching back to HTTPS
+          const targetUrl = `${NETLIFY_URL}?user_id=${userId}`;
+          backBtn.href = targetUrl;
+          backBtn.onclick = function(e) {
+              e.preventDefault();
+              window.location.href = targetUrl;
+          };
+      }
     </script>
   </body>
 </html>

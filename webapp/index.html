@@ -49,13 +49,31 @@
         <p>📱 Install this app for better experience</p>
         <button id="installBtn">Install App</button>
       </div>
+
+      <!-- User Identity Management -->
+      <div style="margin-top: 30px; padding: 15px; background: #1a1a1a; border-radius: 12px; text-align: center; border: 1px solid #333;">
+        <p style="margin: 0 0 10px 0; color: #8b949e; font-size: 0.9em;">
+          User ID: <span id="dispUserId" style="font-family: monospace; color: #58a6ff;">...</span>
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="copyUserLink()" style="background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer;">
+              📋 Copy My Link
+            </button>
+            <button onclick="restoreUser()" style="background: #30363d; color: #c9d1d9; border: 1px solid #8b949e; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer;">
+              🔄 Restore ID
+            </button>
+        </div>
+        <p style="margin: 10px 0 0 0; font-size: 0.75em; color: #666;">
+          Save your link to keep your history if you clear browser data.
+        </p>
+      </div>
     </main>
 
     <!-- MQTT client (browser) - add credentials by copying mqtt_config.example.js -> mqtt_config.js -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js?v=3" defer></script>
-    <script src="mqtt_client.js?v=3" defer></script>
-    <script src="app.js?v=3"></script>
+    <script src="mqtt_config.js?v=6" defer></script>
+    <script src="mqtt_client.js?v=6" defer></script>
+    <script src="app.js?v=6"></script>
     <script>
       // Configuration: Set your Raspberry Pi IP here
       const PI_IP = '10.221.24.195'; 
@@ -89,8 +107,34 @@
             const dashboardUrl = `http://${PI_IP}:${PI_PORT}/my-dashboard?user_id=${userId}`;
             btn.href = dashboardUrl;
             console.log('Dashboard Link set to:', dashboardUrl);
+
+            // Update Display ID
+            const disp = document.getElementById('dispUserId');
+            if (disp) disp.textContent = userId;
         }
       });
+
+      function copyUserLink() {
+        const userId = document.getElementById('dispUserId').textContent;
+        const url = `${window.location.origin}${window.location.pathname}?user_id=${userId}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Link copied! Save this link to access your account later.');
+        }).catch(err => {
+            prompt('Copy this link to save your ID:', url);
+        });
+      }
+
+      function restoreUser() {
+        const current = document.getElementById('dispUserId').textContent;
+        const input = prompt('Enter your User ID to restore:', current);
+        if (input && input !== current) {
+            // Save to storage
+            localStorage.setItem('fer_client_id', input);
+            document.cookie = `fer_client_id=${input}; path=/; max-age=31536000; SameSite=Lax`;
+            // Reload to apply
+            window.location.href = `${window.location.origin}${window.location.pathname}?user_id=${input}`;
+        }
+      }
     </script>
   </body>
 </html>

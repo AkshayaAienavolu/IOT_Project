@@ -319,6 +319,10 @@ startBtn.addEventListener('click', async () => {
       setStatusSuccess('✓ Running — Show your face!');
     } else {
       // Fallback: use getUserMedia loop (already present on many browsers)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera requires HTTPS. Please use the Netlify URL, not the Pi IP.');
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: { ideal: 640 }, height: { ideal: 480 } }
       });

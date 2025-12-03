@@ -20,6 +20,28 @@
   // EXPORTED to window.ensureClientId for reuse in other pages
   function ensureClientId() {
     try {
+      // 1. Check URL Parameters (Highest Priority for restoration/linking)
+      // This allows passing ID between HTTP (Pi) and HTTPS (Netlify)
+      if (typeof URLSearchParams !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramId = urlParams.get('user_id');
+        if (paramId) {
+           // If valid ID found in URL, adopt it immediately
+           if (paramId.startsWith('fer_webapp_') || paramId.startsWith('fer_web_')) {
+             const key = 'fer_client_id';
+             try { localStorage.setItem(key, paramId); } catch (e) {}
+             try {
+               const expires = new Date();
+               expires.setFullYear(expires.getFullYear() + 1);
+               // Use Lax to ensure cookies survive link navigation from external apps
+               document.cookie = `${key}=${paramId}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+             } catch (e) {}
+             if (cfg) cfg.CLIENT_ID = paramId;
+             return paramId;
+           }
+        }
+      }
+
       if (cfg && cfg.CLIENT_ID) return cfg.CLIENT_ID;
       const key = 'fer_client_id';
       let id = null;
@@ -32,7 +54,7 @@
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
           const [name, value] = cookie.trim().split('=');
-          if (name === key) {
+          if (name.trim() === key) {
             id = value;
             break;
           }
@@ -55,7 +77,7 @@
         try {
           const expires = new Date();
           expires.setFullYear(expires.getFullYear() + 1);
-          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
         } catch (e) { /* ignore cookie errors */ }
       } else {
         // MIGRATE OLD IDs: if id starts with 'fer_web_' (old format), update to 'fer_webapp_'
@@ -68,11 +90,21 @@
         try {
           const expires = new Date();
           expires.setFullYear(expires.getFullYear() + 1);
-          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+          document.cookie = `${key}=${id}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
         } catch (e) { /* ignore */ }
       }
       
       if (cfg) cfg.CLIENT_ID = id;
+
+      // Update URL with user_id so copying the link preserves identity
+      if (typeof history !== 'undefined' && history.replaceState) {
+          const url = new URL(window.location);
+          if (url.searchParams.get('user_id') !== id) {
+              url.searchParams.set('user_id', id);
+              history.replaceState(null, '', url);
+          }
+      }
+
       return id;
     } catch (e) {
       // Fallback with correct prefix
