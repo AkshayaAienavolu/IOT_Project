@@ -8,6 +8,22 @@
     <title>FER Mobile - Cross-Dataset Emotion Recognition</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="manifest" href="manifest.json" />
+    <style>
+      /* MQTT Status Badge */
+      #mqttStatus {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+        background: #ff6b6b; /* Red by default */
+        color: white;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+    </style>
     <!-- TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
     <!-- MediaPipe drawing & camera utils (v0.4) -->
@@ -74,6 +90,10 @@
   </head>
   <body>
     <!-- Login/Welcome Modal -->
+      <body>
+    <div id="mqttStatus">MQTT: Disconnected</div>
+    
+    <!-- Login Modal -->
     <div id="loginModal" class="login-modal" style="display: none;">
       <div class="login-box">
         <h2>👋 Welcome!</h2>
