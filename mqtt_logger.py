@@ -26,11 +26,11 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(m
 # === Configuration ===
 # You can override these with environment variables.
 CONFIG = {
-    'WSS_URL': os.environ.get('WSS_URL', ''),  # e.g. wss://abc123.s1.eu.hivemq.cloud:8883/mqtt
-    'HOST': os.environ.get('MQTT_HOST', ''),   # optional, parsed from WSS_URL if empty
+    'WSS_URL': os.environ.get('WSS_URL', 'wss://308c552d0a56494799306611ffacac19.s1.eu.hivemq.cloud:8884/mqtt'),
+    'HOST': os.environ.get('MQTT_HOST', '308c552d0a56494799306611ffacac19.s1.eu.hivemq.cloud'),
     'PORT': int(os.environ.get('MQTT_PORT', '8883')),
-    'USERNAME': os.environ.get('MQTT_USERNAME', ''),
-    'PASSWORD': os.environ.get('MQTT_PASSWORD', ''),
+    'USERNAME': os.environ.get('MQTT_USERNAME', 'feronmobile'),
+    'PASSWORD': os.environ.get('MQTT_PASSWORD', 'Qwerty123'),
     'TOPIC': os.environ.get('MQTT_TOPIC', 'fer/events'),
     'CLIENT_ID': os.environ.get('MQTT_CLIENT_ID', 'fer_logger_' + str(int(time.time())))
 }
