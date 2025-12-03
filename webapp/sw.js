@@ -1,5 +1,5 @@
 // Service Worker for PWA - Offline Support
-const CACHE_NAME = 'fer-mobile-v6';
+const CACHE_NAME = 'fer-mobile-v7';
 const urlsToCache = [
   '/',
   '/index.html',

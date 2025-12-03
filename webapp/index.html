@@ -15,8 +15,77 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.4/camera_utils.js"></script>
     <!-- MediaPipe Face Detection v0.4 -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js"></script>
+    <style>
+      /* Login Modal Styles */
+      .login-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        backdrop-filter: blur(5px);
+      }
+      .login-box {
+        background: #1a1a1a;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        border: 1px solid #333;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      }
+      .login-box h2 {
+        margin-top: 0;
+        color: #fff;
+      }
+      .login-box p {
+        color: #aaa;
+        margin-bottom: 20px;
+      }
+      .login-input {
+        width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #444;
+        background: #000;
+        color: #fff;
+        font-size: 1.1em;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .login-btn {
+        width: 100%;
+        padding: 15px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(135deg, #1f6feb, #58a6ff);
+        color: white;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
+    <!-- Login/Welcome Modal -->
+    <div id="loginModal" class="login-modal" style="display: none;">
+      <div class="login-box">
+        <h2>👋 Welcome!</h2>
+        <p>Enter a unique nickname to track your emotions over time.</p>
+        <input type="text" id="usernameInput" class="login-input" placeholder="e.g. john_doe_99" autocomplete="off">
+        <button onclick="registerUser()" class="login-btn">Start Camera</button>
+        <p style="font-size: 0.8em; margin-top: 15px; color: #666;">
+          Remember this nickname to access your dashboard later!
+        </p>
+      </div>
+    </div>
+
     <main>
       <header>
         <h1>🎭 FER Mobile</h1>
@@ -57,23 +126,20 @@
         </p>
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
             <button onclick="copyUserLink()" style="background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer;">
-              📋 Copy My Link
+              📋 Copy Link
             </button>
-            <button onclick="restoreUser()" style="background: #30363d; color: #c9d1d9; border: 1px solid #8b949e; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer;">
-              🔄 Restore ID
+            <button onclick="switchUser()" style="background: #30363d; color: #c9d1d9; border: 1px solid #8b949e; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer;">
+              👤 Switch User
             </button>
         </div>
-        <p style="margin: 10px 0 0 0; font-size: 0.75em; color: #666;">
-          Save your link to keep your history if you clear browser data.
-        </p>
       </div>
     </main>
 
     <!-- MQTT client (browser) - add credentials by copying mqtt_config.example.js -> mqtt_config.js -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="mqtt_config.js?v=6" defer></script>
-    <script src="mqtt_client.js?v=6" defer></script>
-    <script src="app.js?v=6"></script>
+    <script src="mqtt_config.js?v=7" defer></script>
+    <script src="mqtt_client.js?v=7" defer></script>
+    <script src="app.js?v=7"></script>
     <script>
       // Configuration: Set your Raspberry Pi IP here
       const PI_IP = '10.221.24.195'; 
@@ -81,6 +147,9 @@
 
       // Initialize MQTT connection on page load
       window.addEventListener('load', function() {
+        // Check if user is registered/logged in
+        checkLoginStatus();
+
         // 1. Init MQTT
         if (typeof window.initMqtt === 'function') {
           window.initMqtt();
@@ -114,6 +183,60 @@
         }
       });
 
+      function checkLoginStatus() {
+        // Check if we have a registered user flag or a user_id in URL
+        const isRegistered = localStorage.getItem('fer_user_registered');
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlId = urlParams.get('user_id');
+
+        if (!isRegistered && !urlId) {
+            // Show Login Modal
+            document.getElementById('loginModal').style.display = 'flex';
+        } else if (urlId) {
+            // If URL has ID, mark as registered
+            localStorage.setItem('fer_user_registered', 'true');
+        }
+      }
+
+      function registerUser() {
+        const input = document.getElementById('usernameInput').value.trim();
+        if (!input) {
+            alert('Please enter a nickname');
+            return;
+        }
+        
+        // Generate deterministic ID from nickname
+        // Sanitize: lowercase, alphanumeric only
+        const cleanName = input.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (cleanName.length < 3) {
+            alert('Nickname must be at least 3 characters (letters/numbers only)');
+            return;
+        }
+        
+        const newId = 'fer_webapp_' + cleanName;
+        
+        // Save to storage
+        localStorage.setItem('fer_client_id', newId);
+        localStorage.setItem('fer_user_registered', 'true');
+        
+        // Set cookie for redundancy
+        const expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 1);
+        document.cookie = `fer_client_id=${newId}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+        
+        // Reload to apply changes cleanly
+        window.location.href = window.location.pathname + '?user_id=' + newId;
+      }
+
+      function switchUser() {
+        if (confirm('Are you sure you want to switch user? This will clear your current session.')) {
+            localStorage.removeItem('fer_user_registered');
+            localStorage.removeItem('fer_client_id');
+            // Reload without query params to trigger modal
+            window.location.href = window.location.pathname;
+        }
+      }
+
       function copyUserLink() {
         const userId = document.getElementById('dispUserId').textContent;
         const url = `${window.location.origin}${window.location.pathname}?user_id=${userId}`;
@@ -122,18 +245,6 @@
         }).catch(err => {
             prompt('Copy this link to save your ID:', url);
         });
-      }
-
-      function restoreUser() {
-        const current = document.getElementById('dispUserId').textContent;
-        const input = prompt('Enter your User ID to restore:', current);
-        if (input && input !== current) {
-            // Save to storage
-            localStorage.setItem('fer_client_id', input);
-            document.cookie = `fer_client_id=${input}; path=/; max-age=31536000; SameSite=Lax`;
-            // Reload to apply
-            window.location.href = `${window.location.origin}${window.location.pathname}?user_id=${input}`;
-        }
       }
     </script>
   </body>
