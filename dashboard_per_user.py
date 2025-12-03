@@ -114,7 +114,7 @@ def create_user_dashboard(user_id, user_data, output_folder):
         print(f"Error parsing timestamps for {user_id}: {e}")
         return
 
-    emotion_map = {'Angry': 0, 'Disgust': 1, 'Fear': 2, 'Happy': 3, 'Neutral': 4, 'Sad': 5, 'Surprise': 6, 'Unknown': -1}
+    emotion_map = {'Angry': 0, 'Disgust': 1, 'Fear': 2, 'Happy': 3, 'Neutral': 4, 'Sad': 5, 'Surprise': 6}
     emotion_values = [emotion_map.get(e, -1) for e in emotions]
     emotion_colors = [colors.get(e, 'gray') for e in emotions]
     
