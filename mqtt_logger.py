@@ -87,7 +87,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode('utf-8', errors='ignore')
-    logging.debug('Received message on %s: %s', msg.topic, payload)
+    logging.info('Received message on %s: %s', msg.topic, payload)
     insert_event(payload)
 
 
