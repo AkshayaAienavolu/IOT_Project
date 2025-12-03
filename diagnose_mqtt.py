@@ -10,7 +10,7 @@ import time
 CONFIG = {
     'HOST': '308c552d0a56494799306611ffacac19.s1.eu.hivemq.cloud',
     'PORT': 8883,
-    'USERNAME': 'feronmobile',
+    'USERNAME': 'pi_subscriber',
     'PASSWORD': 'Qwerty123',
     'TOPIC': 'fer/events'
 }
