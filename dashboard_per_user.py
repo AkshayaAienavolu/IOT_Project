@@ -13,6 +13,8 @@ import sqlite3
 import sys
 import os
 from datetime import datetime, timedelta
+import matplotlib
+matplotlib.use('Agg')  # Set backend to non-interactive (headless)
 import matplotlib.pyplot as plt
 from collections import Counter
 
@@ -88,7 +90,7 @@ def create_user_dashboard(user_id, user_data, output_folder):
     print(f'   Events: {len(user_data)}')
     
     # 1. Emotion distribution
-    emotions = [row[2] for row in user_data]
+    emotions = [row[2] if row[2] else 'Unknown' for row in user_data]
     counts = Counter(emotions)
     
     plt.figure(figsize=(10, 6))
@@ -106,9 +108,14 @@ def create_user_dashboard(user_id, user_data, output_folder):
     plt.close()
     
     # 2. Timeline
-    timestamps = [datetime.fromisoformat(row[0].replace('Z', '+00:00')) for row in user_data]
-    emotion_map = {'Angry': 0, 'Disgust': 1, 'Fear': 2, 'Happy': 3, 'Neutral': 4, 'Sad': 5, 'Surprise': 6}
-    emotion_values = [emotion_map.get(e, 4) for e in emotions]
+    try:
+        timestamps = [datetime.fromisoformat(row[0].replace('Z', '+00:00')) for row in user_data]
+    except Exception as e:
+        print(f"Error parsing timestamps for {user_id}: {e}")
+        return
+
+    emotion_map = {'Angry': 0, 'Disgust': 1, 'Fear': 2, 'Happy': 3, 'Neutral': 4, 'Sad': 5, 'Surprise': 6, 'Unknown': -1}
+    emotion_values = [emotion_map.get(e, -1) for e in emotions]
     emotion_colors = [colors.get(e, 'gray') for e in emotions]
     
     plt.figure(figsize=(14, 6))

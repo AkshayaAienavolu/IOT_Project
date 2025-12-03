@@ -394,11 +394,12 @@
           // Charts
           if (data.charts && data.charts.length > 0) {
             html += '<div class="charts-grid">';
+            const timestamp = new Date().getTime(); // Cache buster
             data.charts.forEach(chart => {
               html += `
                 <div class="chart-card">
                   <div class="chart-title">${chart.name}</div>
-                  <img src="${DASHBOARD_API}${chart.url}" 
+                  <img src="${DASHBOARD_API}${chart.url}?t=${timestamp}" 
                        alt="${chart.name}" 
                        class="chart-image"
                        onerror="this.parentElement.innerHTML='<div style=padding:40px;text-align:center;color:#999>Chart not available</div>'">

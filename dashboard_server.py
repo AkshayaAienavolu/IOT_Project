@@ -16,7 +16,13 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for browser access
 
 # Configuration
-DB_PATH = os.getenv('FER_DB', '/home/pi/fer_events.db')
+# Check for DB in current directory first, then fallback to default
+CURRENT_DIR_DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fer_events.db')
+if os.path.exists(CURRENT_DIR_DB):
+    DB_PATH = os.getenv('FER_DB', CURRENT_DIR_DB)
+else:
+    DB_PATH = os.getenv('FER_DB', '/home/pi/fer_events.db')
+
 DASHBOARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboards')
 DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_per_user.py')
 
@@ -301,7 +307,11 @@ def background_regenerator():
     """Regenerate dashboards every 2 minutes in the background"""
     while True:
         print(f"[{datetime.now()}] Regenerating dashboards...")
-        regenerate_dashboards()
+        result = regenerate_dashboards()
+        if not result['success']:
+            print(f"❌ Dashboard generation failed:\n{result['stderr']}")
+        else:
+            print(f"✅ Dashboards updated successfully")
         time.sleep(120)
 
 if __name__ == '__main__':
