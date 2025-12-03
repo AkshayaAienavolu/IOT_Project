@@ -16,26 +16,14 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for browser access
 
 # Configuration
-# Check for DB in current directory first, then fallback to default
-CURRENT_DIR_DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fer_events.db')
-if os.path.exists(CURRENT_DIR_DB):
-    DB_PATH = os.getenv('FER_DB', CURRENT_DIR_DB)
-else:
-    # Fallback to checking if it's in the parent directory or home
-    PARENT_DB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fer_events.db')
-    HOME_DB = os.path.expanduser('~/fer_events.db')
-    
-    if os.path.exists(PARENT_DB):
-        DB_PATH = PARENT_DB
-    elif os.path.exists(HOME_DB):
-        DB_PATH = HOME_DB
-    else:
-        # Default to current dir even if not exists yet
-        DB_PATH = CURRENT_DIR_DB
+# Force DB to be in the same directory as this script (Project Root)
+# This ensures both logger and server use the exact same file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.getenv('FER_DB', os.path.join(BASE_DIR, 'fer_events.db'))
 
 print(f"Using Database at: {DB_PATH}")
 
-DASHBOARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboards')
+DASHBOARD_DIR = os.path.join(BASE_DIR, 'dashboards')
 DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_per_user.py')
 
 def get_all_users():
@@ -105,8 +93,11 @@ def find_best_user_match(requested_id):
 def regenerate_dashboards():
     """Regenerate all dashboard charts"""
     try:
+        # Run the dashboard generator in the same directory as this script
+        # This ensures 'dashboards' folder is created in the correct place
         result = subprocess.run(
             ['python3', DASHBOARD_SCRIPT, DB_PATH],
+            cwd=BASE_DIR,
             capture_output=True,
             text=True,
             timeout=60
@@ -139,6 +130,40 @@ def api_regenerate():
     """API endpoint to regenerate dashboards"""
     result = regenerate_dashboards()
     return jsonify(result)
+
+@app.route('/api/debug')
+def api_debug():
+    """Debug endpoint to check DB status"""
+    try:
+        if not os.path.exists(DB_PATH):
+            return jsonify({'error': 'DB file not found', 'path': DB_PATH})
+            
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Get total count
+        cursor.execute("SELECT COUNT(*) FROM events")
+        total = cursor.fetchone()[0]
+        
+        # Get recent events
+        cursor.execute("SELECT * FROM events ORDER BY id DESC LIMIT 5")
+        recent = cursor.fetchall()
+        
+        # Get users
+        cursor.execute("SELECT DISTINCT user_id FROM events")
+        users = [r[0] for r in cursor.fetchall()]
+        
+        conn.close()
+        
+        return jsonify({
+            'db_path': DB_PATH,
+            'total_events': total,
+            'user_count': len(users),
+            'users': users,
+            'recent_events': recent
+        })
+    except Exception as e:
+        return jsonify({'error': str(e), 'path': DB_PATH})
 
 @app.route('/dashboards/<path:filename>')
 def serve_dashboard(filename):

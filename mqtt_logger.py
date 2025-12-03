@@ -35,7 +35,9 @@ CONFIG = {
     'CLIENT_ID': os.environ.get('MQTT_CLIENT_ID', 'fer_logger_' + str(int(time.time())))
 }
 
-DB_FILE = os.environ.get('FER_DB', 'fer_events.db')
+# Force DB to be in the same directory as this script
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.environ.get('FER_DB', os.path.join(SCRIPT_DIR, 'fer_events.db'))
 
 
 def ensure_db(path=DB_FILE):
