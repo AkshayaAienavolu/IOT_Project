@@ -43,6 +43,13 @@
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
+        align-items: center;
+      }
+      
+      .refresh-info {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85em;
+        margin-left: auto;
       }
 
       .nav-btn {
@@ -219,7 +226,8 @@
 
       <div class="nav-buttons">
         <a id="backToCameraBtn" href="#" class="nav-btn">← Back to Camera</a>
-        <button class="nav-btn secondary" onclick="refreshDashboard()">🔄 Refresh Data</button>
+        <button class="nav-btn secondary" onclick="refreshDashboard()">🔄 Refresh Now</button>
+        <span class="refresh-info" id="refreshInfo">Auto-refresh: Every 2 min</span>
       </div>
 
       <div id="dashboardContent">
@@ -474,8 +482,24 @@
       // Load dashboard on page load
       window.addEventListener('load', loadDashboard);
 
-      // Auto-refresh every 2 minutes
+      // Auto-refresh every 2 minutes (120000ms)
       setInterval(refreshDashboard, 120000);
+      
+      // Show last refresh time
+      function updateRefreshTime() {
+        const now = new Date().toLocaleTimeString();
+        const refreshInfo = document.getElementById('refreshInfo');
+        if (refreshInfo) {
+          refreshInfo.textContent = `Last updated: ${now}`;
+        }
+      }
+      
+      // Update refresh time after each load
+      const originalLoadDashboard = loadDashboard;
+      loadDashboard = function() {
+        originalLoadDashboard();
+        updateRefreshTime();
+      };
 
       // Fix "Back to Camera" link to point to Netlify (HTTPS)
       // This prevents the user from going back to the HTTP version of the camera which fails

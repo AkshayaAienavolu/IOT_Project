@@ -133,38 +133,18 @@
 
       client.on('connect', function () {
         console.log('MQTT connected to', cfg.WSS_URL);
-        const el = document.getElementById('mqttStatus');
-        if (el) {
-            el.textContent = 'MQTT: Connected';
-            el.style.background = '#2ea44f'; // Green
-        }
       });
 
       client.on('reconnect', function () {
         console.log('MQTT reconnecting...');
-        const el = document.getElementById('mqttStatus');
-        if (el) {
-            el.textContent = 'MQTT: Reconnecting...';
-            el.style.background = '#e3b341'; // Yellow
-        }
       });
 
       client.on('error', function (err) {
         console.warn('MQTT error', err && err.message || err);
-        const el = document.getElementById('mqttStatus');
-        if (el) {
-            el.textContent = 'MQTT: Error';
-            el.style.background = '#ff6b6b'; // Red
-        }
       });
 
       client.on('close', function () {
         console.log('MQTT connection closed');
-        const el = document.getElementById('mqttStatus');
-        if (el) {
-            el.textContent = 'MQTT: Closed';
-            el.style.background = '#ff6b6b'; // Red
-        }
       });
 
     } catch (e) {

@@ -23,8 +23,13 @@ def on_connect(client, userdata, flags, rc):
             "confidence": 0.99,
             "ts": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
         }
-        client.publish(CONFIG['TOPIC'], json.dumps(payload), qos=1)
+        result = client.publish(CONFIG['TOPIC'], json.dumps(payload), qos=1)
         print(f"Sent test message to {CONFIG['TOPIC']}")
+        print(f"Waiting for delivery confirmation...")
+        # Wait for message to be delivered before disconnecting
+        result.wait_for_publish()
+        print("Message delivered!")
+        time.sleep(1)  # Give logger time to process
         client.disconnect()
     else:
         print(f"Failed to connect: {rc}")
