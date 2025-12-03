@@ -1,0 +1,683 @@
+{
+  "metadata": {
+    "source": "Emotion Detection Study Survey",
+    "generated": "2025-12-04",
+    "description": "Context-aware wellbeing suggestions based on peer survey data"
+  },
+  "statistics": {
+    "total_responses": 46,
+    "emotions_tracked": [
+      "Fear",
+      "Sad",
+      "Happy",
+      "Neutral",
+      "Angry",
+      "sad",
+      "surprise",
+      "disgust",
+      "angry",
+      "fear",
+      "happy",
+      "neutral"
+    ],
+    "emotion_distribution": {
+      "Fear": 4,
+      "Sad": 9,
+      "Happy": 5,
+      "Neutral": 2,
+      "Angry": 1,
+      "sad": 5,
+      "surprise": 7,
+      "disgust": 7,
+      "angry": 2,
+      "fear": 1,
+      "happy": 2,
+      "neutral": 1
+    }
+  },
+  "knowledge_base": {
+    "emotion_contexts": {
+      "Fear": [
+        {
+          "reason": "I have exam tomorrow",
+          "timestamp": "13/10/2025 23:20:29"
+        },
+        {
+          "reason": "I had fdfed evaluation",
+          "timestamp": "14/10/2025 14:06:42"
+        },
+        {
+          "reason": "As tomorrow we have wc project mid evaluation",
+          "timestamp": "15/10/2025 22:11:03"
+        },
+        {
+          "reason": "I'm worrying about my mid evaluation",
+          "timestamp": "16/10/2025 06:44:45"
+        }
+      ],
+      "Sad": [
+        {
+          "reason": "Just now I got my QRA marks",
+          "timestamp": "14/10/2025 13:09:59"
+        },
+        {
+          "reason": "Many classes and no sleep",
+          "timestamp": "14/10/2025 13:12:41"
+        },
+        {
+          "reason": "Got into a fight with a friend",
+          "timestamp": "14/10/2025 13:56:52"
+        },
+        {
+          "reason": "Don't know",
+          "timestamp": "14/10/2025 14:09:12"
+        },
+        {
+          "reason": "Because of mood swings and sometimes without any reason",
+          "timestamp": "15/10/2025 22:12:06"
+        },
+        {
+          "reason": "So much problems",
+          "timestamp": "15/10/2025 22:12:59"
+        },
+        {
+          "reason": "My day didn't go well",
+          "timestamp": "15/10/2025 22:13:01"
+        },
+        {
+          "reason": "Because of project",
+          "timestamp": "15/10/2025 22:18:32"
+        },
+        {
+          "reason": "Bcoz of cc project",
+          "timestamp": "16/10/2025 00:12:01"
+        }
+      ],
+      "Happy": [
+        {
+          "reason": "Because I ate tasty food",
+          "timestamp": "14/10/2025 13:45:43"
+        },
+        {
+          "reason": "I am happy because things going grate today and i am in a positive mood",
+          "timestamp": "14/10/2025 14:02:15"
+        },
+        {
+          "reason": "I talked with my long distance Best friend after a long gap",
+          "timestamp": "14/10/2025 14:03:44"
+        },
+        {
+          "reason": "Had a great day",
+          "timestamp": "15/10/2025 22:12:38"
+        },
+        {
+          "reason": "Because I'm helping sofi🫠",
+          "timestamp": "15/10/2025 23:32:57"
+        }
+      ],
+      "Neutral": [
+        {
+          "reason": "me",
+          "timestamp": "15/10/2025 22:11:02"
+        },
+        {
+          "reason": "No particular reason, just in a normal state",
+          "timestamp": "15/10/2025 23:09:56"
+        }
+      ],
+      "Angry": [
+        {
+          "reason": "I hated the way our fdfed project evaluation went",
+          "timestamp": "15/10/2025 22:13:31"
+        }
+      ],
+      "sad": [
+        {
+          "reason": "Low grades received",
+          "timestamp": "2025-09-19 17:37:05"
+        },
+        {
+          "reason": "Friend feeling down",
+          "timestamp": "2025-09-27 16:53:33"
+        },
+        {
+          "reason": "Friend feeling down",
+          "timestamp": "2025-10-02 01:04:56"
+        },
+        {
+          "reason": "Project submission delayed",
+          "timestamp": "2025-10-11 18:23:38"
+        },
+        {
+          "reason": "Missed a class",
+          "timestamp": "2025-10-14 11:47:12"
+        }
+      ],
+      "surprise": [
+        {
+          "reason": "Faculty praised the group",
+          "timestamp": "2025-09-21 13:09:48"
+        },
+        {
+          "reason": "Surprise quiz announced",
+          "timestamp": "2025-09-23 02:56:19"
+        },
+        {
+          "reason": "Unexpected holiday",
+          "timestamp": "2025-09-30 22:09:24"
+        },
+        {
+          "reason": "Faculty praised the group",
+          "timestamp": "2025-10-02 17:16:23"
+        },
+        {
+          "reason": "Unexpected holiday",
+          "timestamp": "2025-10-05 05:40:52"
+        },
+        {
+          "reason": "Won college competition unexpectedly",
+          "timestamp": "2025-10-06 21:25:05"
+        },
+        {
+          "reason": "Won college competition unexpectedly",
+          "timestamp": "2025-10-07 20:34:25"
+        }
+      ],
+      "disgust": [
+        {
+          "reason": "Spoiled food from canteen",
+          "timestamp": "2025-09-22 13:54:57"
+        },
+        {
+          "reason": "Rude behavior witnessed",
+          "timestamp": "2025-09-26 00:50:39"
+        },
+        {
+          "reason": "Mess food was bad",
+          "timestamp": "2025-09-26 17:10:45"
+        },
+        {
+          "reason": "Mess food was bad",
+          "timestamp": "2025-09-30 02:33:53"
+        },
+        {
+          "reason": "Hostel common area dirty",
+          "timestamp": "2025-10-04 08:12:34"
+        },
+        {
+          "reason": "Mess food was bad",
+          "timestamp": "2025-10-09 14:22:41"
+        },
+        {
+          "reason": "Hostel common area dirty",
+          "timestamp": "2025-10-11 02:55:34"
+        }
+      ],
+      "angry": [
+        {
+          "reason": "Faculty feedback was unfair",
+          "timestamp": "2025-09-24 07:43:21"
+        },
+        {
+          "reason": "Technical problems in lab",
+          "timestamp": "2025-09-25 04:18:10"
+        }
+      ],
+      "fear": [
+        {
+          "reason": "Worried about placements",
+          "timestamp": "2025-09-29 06:49:11"
+        }
+      ],
+      "happy": [
+        {
+          "reason": "Completed project milestone",
+          "timestamp": "2025-10-06 14:54:32"
+        },
+        {
+          "reason": "Enjoyed coding with friends",
+          "timestamp": "2025-10-12 23:38:43"
+        }
+      ],
+      "neutral": [
+        {
+          "reason": "Routine day of classes",
+          "timestamp": "2025-10-10 00:43:53"
+        }
+      ]
+    },
+    "suggestions": {
+      "Fear": [
+        {
+          "trigger": [
+            "exam",
+            "test",
+            "evaluation",
+            "project"
+          ],
+          "suggestions": [
+            "📚 Break your study into small chunks (Pomodoro technique: 25 min focus)",
+            "🧘 Try deep breathing: 4 seconds in, 7 hold, 8 out",
+            "💪 Remember: Preparation reduces anxiety. Make a simple checklist.",
+            "🤝 Talk to a friend who has been through this"
+          ]
+        },
+        {
+          "trigger": [
+            "deadline",
+            "submission",
+            "presentation"
+          ],
+          "suggestions": [
+            "📝 Write down exactly what needs to be done",
+            "⏰ Set realistic micro-goals for the next hour",
+            "🎯 Focus on progress, not perfection",
+            "🌿 Take a 5-minute walk to clear your mind"
+          ]
+        },
+        {
+          "trigger": [
+            "general",
+            "unknown",
+            "default"
+          ],
+          "suggestions": [
+            "🌸 Ground yourself: Name 5 things you can see right now",
+            "💭 Ask: \"What is the worst that could happen? Can I handle it?\"",
+            "🎵 Listen to calming music or nature sounds",
+            "📞 Reach out to someone you trust"
+          ]
+        }
+      ],
+      "Sad": [
+        {
+          "trigger": [
+            "marks",
+            "grades",
+            "performance",
+            "QRA"
+          ],
+          "suggestions": [
+            "💡 One result does not define you - it is data, not destiny",
+            "📈 Identify one specific thing to improve next time",
+            "🎯 Celebrate what you DID learn, even if grade was not perfect",
+            "🤗 Talk to your professor or TA about growth opportunities"
+          ]
+        },
+        {
+          "trigger": [
+            "fight",
+            "argument",
+            "conflict",
+            "friend"
+          ],
+          "suggestions": [
+            "💬 Give yourself time to cool down before responding",
+            "❤️ Remember: Good relationships survive disagreements",
+            "✍️ Write down your feelings (you do not have to send it)",
+            "🕊️ When ready, reach out with \"Can we talk?\""
+          ]
+        },
+        {
+          "trigger": [
+            "sleep",
+            "tired",
+            "exhausted",
+            "classes"
+          ],
+          "suggestions": [
+            "😴 Prioritize 7-8 hours of sleep tonight - it is not lazy, it is essential",
+            "☕ Reduce caffeine after 2 PM",
+            "📵 Screen-free 30 mins before bed",
+            "🎧 Try a sleep meditation or calm podcast"
+          ]
+        },
+        {
+          "trigger": [
+            "mood swings",
+            "do not know",
+            "no reason"
+          ],
+          "suggestions": [
+            "🌈 Sadness without a reason is valid - emotions just happen",
+            "🏃 Move your body: 10-min walk can shift your mood",
+            "☀️ Get some sunlight or bright light exposure",
+            "🎨 Do something creative without judgment (doodle, music, cook)"
+          ]
+        }
+      ],
+      "Happy": [
+        {
+          "trigger": [
+            "food",
+            "ate",
+            "tasty"
+          ],
+          "suggestions": [
+            "😊 Enjoy this moment! Savor the good feeling",
+            "📸 Capture happy moments (photo, journal entry)",
+            "💫 Share your joy - tell someone what made you happy",
+            "🎉 Good food = good mood. Remember what works for you!"
+          ]
+        },
+        {
+          "trigger": [
+            "friend",
+            "talked",
+            "conversation",
+            "Best friend"
+          ],
+          "suggestions": [
+            "🥰 Quality connections boost wellbeing - schedule regular catch-ups",
+            "💌 Send a quick \"that meant a lot to me\" message",
+            "🔄 Good relationships are two-way - check in on them too",
+            "🌟 Cultivate friendships that energize you"
+          ]
+        },
+        {
+          "trigger": [
+            "positive",
+            "grate",
+            "going well",
+            "mood"
+          ],
+          "suggestions": [
+            "📝 Write down 3 specific things going well (for tough days)",
+            "🙏 Practice gratitude - it amplifies happiness",
+            "⚡ Use this positive energy for something you have been avoiding",
+            "🎁 Pay it forward - small acts of kindness boost happiness"
+          ]
+        }
+      ],
+      "Neutral": [
+        {
+          "trigger": [
+            "general",
+            "default",
+            "me"
+          ],
+          "suggestions": [
+            "🌿 Neutral is peaceful - no need to force emotions",
+            "🎯 Good time to plan or organize something",
+            "🧘 Try mindfulness: Just notice what you are experiencing",
+            "📚 Engage in a hobby or learn something new"
+          ]
+        }
+      ],
+      "Angry": [
+        {
+          "trigger": [
+            "general",
+            "default"
+          ],
+          "suggestions": [
+            "🔥 Pause before reacting - anger is information",
+            "🏃 Physical activity helps: run, dance, punch a pillow",
+            "🗣️ Express it safely: vent to a friend or journal",
+            "❓ Ask: \"What boundary was crossed? What do I need?\""
+          ]
+        }
+      ],
+      "Disgust": [
+        {
+          "trigger": [
+            "general",
+            "default"
+          ],
+          "suggestions": [
+            "🧹 Sometimes disgust signals a need for change",
+            "🚪 Remove yourself from the triggering situation if possible",
+            "💭 Reflect: What value of mine is being violated?",
+            "🌊 Let the feeling pass like a wave - it will"
+          ]
+        }
+      ],
+      "Surprise": [
+        {
+          "trigger": [
+            "general",
+            "default"
+          ],
+          "suggestions": [
+            "✨ Surprise is brief - notice how you feel underneath",
+            "🎢 Life is unpredictable - embrace the unexpected",
+            "📖 Unexpected moments often become best memories",
+            "🧠 Stay curious about what happens next"
+          ]
+        }
+      ]
+    },
+    "patterns": [
+      {
+        "emotion": "Fear",
+        "context": "I have exam tomorrow",
+        "timestamp": "13/10/2025 23:20:29"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Just now I got my QRA marks",
+        "timestamp": "14/10/2025 13:09:59"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Many classes and no sleep",
+        "timestamp": "14/10/2025 13:12:41"
+      },
+      {
+        "emotion": "Happy",
+        "context": "Because I ate tasty food",
+        "timestamp": "14/10/2025 13:45:43"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Got into a fight with a friend",
+        "timestamp": "14/10/2025 13:56:52"
+      },
+      {
+        "emotion": "Happy",
+        "context": "I am happy because things going grate today and i am in a positive mood",
+        "timestamp": "14/10/2025 14:02:15"
+      },
+      {
+        "emotion": "Happy",
+        "context": "I talked with my long distance Best friend after a long gap",
+        "timestamp": "14/10/2025 14:03:44"
+      },
+      {
+        "emotion": "Fear",
+        "context": "I had fdfed evaluation",
+        "timestamp": "14/10/2025 14:06:42"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Don't know",
+        "timestamp": "14/10/2025 14:09:12"
+      },
+      {
+        "emotion": "Neutral",
+        "context": "me",
+        "timestamp": "15/10/2025 22:11:02"
+      },
+      {
+        "emotion": "Fear",
+        "context": "As tomorrow we have wc project mid evaluation",
+        "timestamp": "15/10/2025 22:11:03"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Because of mood swings and sometimes without any reason",
+        "timestamp": "15/10/2025 22:12:06"
+      },
+      {
+        "emotion": "Happy",
+        "context": "Had a great day",
+        "timestamp": "15/10/2025 22:12:38"
+      },
+      {
+        "emotion": "Sad",
+        "context": "So much problems",
+        "timestamp": "15/10/2025 22:12:59"
+      },
+      {
+        "emotion": "Sad",
+        "context": "My day didn't go well",
+        "timestamp": "15/10/2025 22:13:01"
+      },
+      {
+        "emotion": "Angry",
+        "context": "I hated the way our fdfed project evaluation went",
+        "timestamp": "15/10/2025 22:13:31"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Because of project",
+        "timestamp": "15/10/2025 22:18:32"
+      },
+      {
+        "emotion": "Neutral",
+        "context": "No particular reason, just in a normal state",
+        "timestamp": "15/10/2025 23:09:56"
+      },
+      {
+        "emotion": "Happy",
+        "context": "Because I'm helping sofi🫠",
+        "timestamp": "15/10/2025 23:32:57"
+      },
+      {
+        "emotion": "Sad",
+        "context": "Bcoz of cc project",
+        "timestamp": "16/10/2025 00:12:01"
+      },
+      {
+        "emotion": "Fear",
+        "context": "I'm worrying about my mid evaluation",
+        "timestamp": "16/10/2025 06:44:45"
+      },
+      {
+        "emotion": "sad",
+        "context": "Low grades received",
+        "timestamp": "2025-09-19 17:37:05"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Faculty praised the group",
+        "timestamp": "2025-09-21 13:09:48"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Spoiled food from canteen",
+        "timestamp": "2025-09-22 13:54:57"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Surprise quiz announced",
+        "timestamp": "2025-09-23 02:56:19"
+      },
+      {
+        "emotion": "angry",
+        "context": "Faculty feedback was unfair",
+        "timestamp": "2025-09-24 07:43:21"
+      },
+      {
+        "emotion": "angry",
+        "context": "Technical problems in lab",
+        "timestamp": "2025-09-25 04:18:10"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Rude behavior witnessed",
+        "timestamp": "2025-09-26 00:50:39"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Mess food was bad",
+        "timestamp": "2025-09-26 17:10:45"
+      },
+      {
+        "emotion": "sad",
+        "context": "Friend feeling down",
+        "timestamp": "2025-09-27 16:53:33"
+      },
+      {
+        "emotion": "fear",
+        "context": "Worried about placements",
+        "timestamp": "2025-09-29 06:49:11"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Mess food was bad",
+        "timestamp": "2025-09-30 02:33:53"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Unexpected holiday",
+        "timestamp": "2025-09-30 22:09:24"
+      },
+      {
+        "emotion": "sad",
+        "context": "Friend feeling down",
+        "timestamp": "2025-10-02 01:04:56"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Faculty praised the group",
+        "timestamp": "2025-10-02 17:16:23"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Hostel common area dirty",
+        "timestamp": "2025-10-04 08:12:34"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Unexpected holiday",
+        "timestamp": "2025-10-05 05:40:52"
+      },
+      {
+        "emotion": "happy",
+        "context": "Completed project milestone",
+        "timestamp": "2025-10-06 14:54:32"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Won college competition unexpectedly",
+        "timestamp": "2025-10-06 21:25:05"
+      },
+      {
+        "emotion": "surprise",
+        "context": "Won college competition unexpectedly",
+        "timestamp": "2025-10-07 20:34:25"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Mess food was bad",
+        "timestamp": "2025-10-09 14:22:41"
+      },
+      {
+        "emotion": "neutral",
+        "context": "Routine day of classes",
+        "timestamp": "2025-10-10 00:43:53"
+      },
+      {
+        "emotion": "disgust",
+        "context": "Hostel common area dirty",
+        "timestamp": "2025-10-11 02:55:34"
+      },
+      {
+        "emotion": "sad",
+        "context": "Project submission delayed",
+        "timestamp": "2025-10-11 18:23:38"
+      },
+      {
+        "emotion": "happy",
+        "context": "Enjoyed coding with friends",
+        "timestamp": "2025-10-12 23:38:43"
+      },
+      {
+        "emotion": "sad",
+        "context": "Missed a class",
+        "timestamp": "2025-10-14 11:47:12"
+      }
+    ]
+  }
+}

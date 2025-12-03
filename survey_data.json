@@ -1,0 +1,248 @@
+{
+  "Sad": {
+    "immediate": [
+      "Take a short walk outside to get fresh air",
+      "Listen to uplifting music that makes you smile",
+      "Call or text a friend to chat",
+      "Watch a funny video or comedy show",
+      "Do 10 minutes of light exercise or stretching",
+      "Write down three things you're grateful for"
+    ],
+    "long_term": [
+      "Establish a regular exercise routine (3-4 times per week)",
+      "Join a hobby group or club to meet like-minded people",
+      "Practice mindfulness meditation daily",
+      "Maintain a consistent sleep schedule",
+      "Volunteer to help others in your community",
+      "Consider talking to a therapist or counselor"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Talking to friends - 15 responses",
+        "Exercise/physical activity - 12 responses",
+        "Listening to music - 10 responses",
+        "Getting outdoors/nature - 8 responses",
+        "Watching favorite shows - 7 responses"
+      ],
+      "what_to_avoid": [
+        "Isolating yourself",
+        "Excessive social media scrolling",
+        "Staying in bed all day",
+        "Negative self-talk"
+      ]
+    }
+  },
+  "Angry": {
+    "immediate": [
+      "Take 10 deep breaths before responding to the situation",
+      "Go for a brisk walk or run to release energy",
+      "Punch a pillow or do intense exercise",
+      "Write down your feelings without filtering",
+      "Listen to calming music or nature sounds",
+      "Count to 10 slowly before reacting"
+    ],
+    "long_term": [
+      "Practice daily meditation or mindfulness",
+      "Identify your anger triggers and plan responses",
+      "Take up a physical hobby like martial arts or boxing",
+      "Learn assertive communication techniques",
+      "Ensure adequate sleep (anger increases with fatigue)",
+      "Consider anger management counseling"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Physical exercise - 18 responses",
+        "Taking a break/walking away - 14 responses",
+        "Talking it out with someone - 11 responses",
+        "Deep breathing exercises - 9 responses",
+        "Listening to music - 8 responses"
+      ],
+      "what_to_avoid": [
+        "Making decisions while angry",
+        "Sending messages or emails immediately",
+        "Suppressing feelings without processing",
+        "Drinking alcohol"
+      ]
+    }
+  },
+  "Fear": {
+    "immediate": [
+      "Use the 5-4-3-2-1 grounding technique (5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste)",
+      "Practice box breathing (inhale 4, hold 4, exhale 4, hold 4)",
+      "Call someone you trust to talk through your fears",
+      "Write down your worries and challenge them rationally",
+      "Focus on what you can control in this moment",
+      "Progressive muscle relaxation"
+    ],
+    "long_term": [
+      "Gradual exposure to feared situations (with support)",
+      "Regular exercise to reduce anxiety levels",
+      "Build a strong support network",
+      "Learn cognitive behavioral therapy (CBT) techniques",
+      "Limit caffeine and ensure good sleep hygiene",
+      "Consider professional therapy for persistent fears"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Talking to trusted person - 16 responses",
+        "Deep breathing/meditation - 13 responses",
+        "Facing fears gradually - 10 responses",
+        "Physical exercise - 9 responses",
+        "Grounding techniques - 8 responses"
+      ],
+      "what_to_avoid": [
+        "Complete avoidance of feared situations",
+        "Excessive reassurance-seeking",
+        "Catastrophic thinking",
+        "Isolation"
+      ]
+    }
+  },
+  "Happy": {
+    "immediate": [
+      "Share your happiness with someone you care about",
+      "Write down what made you happy in a gratitude journal",
+      "Take a photo or note to remember this moment",
+      "Do something kind for someone else",
+      "Celebrate with your favorite treat or activity",
+      "Savor the moment mindfully"
+    ],
+    "long_term": [
+      "Identify patterns: what activities bring you joy?",
+      "Schedule regular 'happiness activities' into your week",
+      "Practice daily gratitude journaling",
+      "Cultivate meaningful relationships",
+      "Engage in acts of kindness regularly",
+      "Pursue hobbies and passions consistently"
+    ],
+    "survey_responses": {
+      "what_amplifies_happiness": [
+        "Sharing joy with others - 20 responses",
+        "Expressing gratitude - 15 responses",
+        "Doing something creative - 12 responses",
+        "Helping others - 11 responses",
+        "Being in nature - 10 responses"
+      ],
+      "maintaining_happiness": [
+        "Regular exercise and healthy eating",
+        "Quality time with loved ones",
+        "Pursuing personal goals",
+        "Practicing mindfulness"
+      ]
+    }
+  },
+  "Neutral": {
+    "immediate": [
+      "Check in with yourself: how are you really feeling?",
+      "Try a new activity to spark interest or curiosity",
+      "Reach out to a friend for connection",
+      "Take a mindful walk and observe your surroundings",
+      "Set a small, achievable goal for today",
+      "Do something creative or try a new recipe"
+    ],
+    "long_term": [
+      "Explore new hobbies or areas of interest",
+      "Set meaningful personal or professional goals",
+      "Build deeper connections with people around you",
+      "Practice mindfulness to increase emotional awareness",
+      "Challenge yourself with new experiences regularly",
+      "Reflect on your values and life direction"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Trying new experiences - 14 responses",
+        "Connecting with friends - 12 responses",
+        "Setting new goals - 10 responses",
+        "Physical activity - 9 responses",
+        "Learning something new - 8 responses"
+      ],
+      "considerations": [
+        "Neutral isn't bad - it's okay to just 'be'",
+        "Use this calm state for reflection",
+        "Good time to plan and organize",
+        "Opportunity for self-care"
+      ]
+    }
+  },
+  "Surprise": {
+    "immediate": [
+      "Take a moment to pause and process what happened",
+      "Determine if this is a positive or negative surprise",
+      "Share the experience with someone close to you",
+      "Journal about the unexpected event",
+      "Practice acceptance of things outside your control",
+      "Use grounding techniques if feeling overwhelmed"
+    ],
+    "long_term": [
+      "Build flexibility and adaptability in your daily life",
+      "Practice embracing spontaneity in safe ways",
+      "Develop resilience to handle unexpected situations",
+      "Keep an open mind to new experiences",
+      "Learn stress management techniques",
+      "Build a support network for uncertain times"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Taking time to process - 13 responses",
+        "Talking to someone - 11 responses",
+        "Writing/journaling - 9 responses",
+        "Practicing acceptance - 8 responses",
+        "Deep breathing - 7 responses"
+      ],
+      "perspective": [
+        "Surprise can be positive or negative",
+        "Build adaptability as a life skill",
+        "Not all surprises need immediate action",
+        "Use as opportunity for growth"
+      ]
+    }
+  },
+  "Disgust": {
+    "immediate": [
+      "Remove yourself from the triggering situation if possible",
+      "Practice acceptance of what you cannot change",
+      "Shift focus to something pleasant or neutral",
+      "Talk to someone about your feelings",
+      "Use deep breathing to calm your response",
+      "Remind yourself this feeling will pass"
+    ],
+    "long_term": [
+      "Identify patterns in what triggers disgust for you",
+      "Practice emotional regulation techniques",
+      "Set healthy boundaries in relationships and situations",
+      "Work on acceptance and tolerance where appropriate",
+      "Develop coping strategies for unavoidable triggers",
+      "Consider if disgust is protecting you (trust your gut)"
+    ],
+    "survey_responses": {
+      "what_helps": [
+        "Removing from situation - 12 responses",
+        "Distraction with positive activity - 10 responses",
+        "Talking about it - 8 responses",
+        "Setting boundaries - 7 responses",
+        "Deep breathing - 6 responses"
+      ],
+      "when_to_listen": [
+        "Disgust can be a protective emotion",
+        "Trust your instincts about people/situations",
+        "Not all disgust needs to be 'fixed'",
+        "Set boundaries when needed"
+      ]
+    }
+  },
+  "meta_data": {
+    "survey_info": {
+      "total_respondents": 25,
+      "age_range": "18-35",
+      "collection_date": "2025-12-04",
+      "methodology": "Friend survey on emotional wellbeing strategies"
+    },
+    "usage_notes": [
+      "Replace this template with your actual survey data",
+      "Add or remove suggestions based on your findings",
+      "Include specific numbers from your survey",
+      "Can add cultural or context-specific recommendations",
+      "Update regularly as you collect more data"
+    ]
+  }
+}

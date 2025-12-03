@@ -11,6 +11,11 @@ import sqlite3
 from datetime import datetime, timedelta
 import subprocess
 import json
+import sys
+
+# Add src directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src'))
+from wellbeing_advisor import WellbeingAdvisor
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for browser access
@@ -25,6 +30,9 @@ print(f"Using Database at: {DB_PATH}")
 
 DASHBOARD_DIR = os.path.join(BASE_DIR, 'dashboards')
 DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_per_user.py')
+
+# Initialize Wellbeing Advisor
+wellbeing_advisor = WellbeingAdvisor(db_path=DB_PATH)
 
 def get_all_users():
     """Fetch list of all user IDs from database"""
@@ -314,6 +322,17 @@ def api_user_summary(user_id):
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/<user_id>/wellbeing')
+def api_user_wellbeing(user_id):
+    """API endpoint to get personalized context-aware wellbeing suggestions"""
+    try:
+        # Generate comprehensive wellbeing report
+        report = wellbeing_advisor.generate_wellbeing_report(user_id)
+        return jsonify(report)
+        
+    except Exception as e:
+        return jsonify({'error': str(e), 'status': 'error'}), 500
 
 # === WebApp Routes ===
 

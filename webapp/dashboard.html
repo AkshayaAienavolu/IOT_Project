@@ -201,6 +201,110 @@
         margin-top: 5px;
       }
 
+      .wellbeing-section {
+        margin-top: 40px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .wellbeing-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+      }
+
+      .wellbeing-header h2 {
+        margin: 0;
+        color: #667eea;
+        font-size: 1.8em;
+      }
+
+      .wellbeing-icon {
+        font-size: 2.5em;
+        margin-right: 15px;
+      }
+
+      .context-message {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        line-height: 1.8;
+        color: #333;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .suggestions-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .suggestion-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .suggestion-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .suggestion-card h3 {
+        margin-top: 0;
+        color: #667eea;
+        font-size: 1.3em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .suggestion-list {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0 0 0;
+      }
+
+      .suggestion-list li {
+        padding: 12px;
+        margin: 8px 0;
+        background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+        border-left: 3px solid #667eea;
+        border-radius: 5px;
+        line-height: 1.6;
+        transition: all 0.2s;
+      }
+
+      .suggestion-list li:hover {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        transform: translateX(5px);
+      }
+
+      .loading-wellbeing {
+        text-align: center;
+        padding: 40px;
+        color: #667eea;
+        font-style: italic;
+      }
+
+      .emotion-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
       @media (max-width: 768px) {
         .charts-grid {
           grid-template-columns: 1fr;
@@ -212,6 +316,15 @@
 
         .stats-grid {
           grid-template-columns: 1fr 1fr;
+        }
+
+        .suggestions-container {
+          grid-template-columns: 1fr;
+        }
+
+        .wellbeing-header {
+          flex-direction: column;
+          text-align: center;
         }
       }
     </style>
@@ -428,6 +541,9 @@
 
           contentDiv.innerHTML = html;
 
+          // Load wellbeing suggestions after main dashboard
+          loadWellbeingSuggestions(userId);
+
         } catch (error) {
           console.error('Error loading dashboard:', error);
           
@@ -465,6 +581,129 @@
               <p style="margin-top: 20px;">
                 <button class="nav-btn" onclick="refreshDashboard()">Try Again</button>
               </p>
+            </div>
+          `;
+        }
+      }
+
+      async function loadWellbeingSuggestions(userId) {
+        const wellbeingDiv = document.createElement('div');
+        wellbeingDiv.id = 'wellbeingSection';
+        wellbeingDiv.className = 'wellbeing-section';
+        wellbeingDiv.innerHTML = '<div class="loading-wellbeing">🧠 Analyzing your patterns to provide context-aware wellbeing suggestions...</div>';
+        
+        const contentDiv = document.getElementById('dashboardContent');
+        contentDiv.appendChild(wellbeingDiv);
+
+        try {
+          const response = await fetch(`${DASHBOARD_API}/api/user/${userId}/wellbeing`);
+          
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          // Handle no data case
+          if (data.status === 'no_data') {
+            wellbeingDiv.innerHTML = `
+              <div class="wellbeing-header">
+                <span class="wellbeing-icon">🧠</span>
+                <h2>Wellbeing Suggestions</h2>
+              </div>
+              <div class="context-message">
+                <p>${data.message}</p>
+                <ul class="suggestion-list">
+                  ${data.suggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+            return;
+          }
+
+          // Build wellbeing HTML with new data structure
+          let html = `
+            <div class="wellbeing-header">
+              <span class="wellbeing-icon">🧠</span>
+              <h2>Context-Aware Wellbeing Guide</h2>
+              <span class="emotion-badge">${data.patterns.most_common_emotion}</span>
+            </div>
+          `;
+
+          // Insights section
+          if (data.insights && data.insights.length > 0) {
+            html += `
+              <div class="context-message">
+                <strong>📊 Your Emotional Patterns:</strong><br>
+                ${data.insights.map(insight => `<div style="margin: 5px 0;">${insight}</div>`).join('')}
+              </div>
+            `;
+          }
+
+          html += '<div class="suggestions-container">';
+
+          // Primary suggestions (main emotion)
+          if (data.primary_suggestions && data.primary_suggestions.tips) {
+            html += `
+              <div class="suggestion-card">
+                <h3>${data.primary_suggestions.title}</h3>
+                <p style="color: #666; font-size: 0.9em;">Based on survey insights from your peers:</p>
+                <ul class="suggestion-list">
+                  ${data.primary_suggestions.tips.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }
+
+          // Recent suggestions (current emotion)
+          if (data.recent_suggestions && data.recent_suggestions.tips && 
+              data.recent_suggestions.emotion !== data.primary_suggestions.emotion) {
+            html += `
+              <div class="suggestion-card">
+                <h3>⚡ ${data.recent_suggestions.title}</h3>
+                <p style="color: #666; font-size: 0.9em;">Immediate actions you can take:</p>
+                <ul class="suggestion-list">
+                  ${data.recent_suggestions.tips.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }
+
+          // General tips from peers
+          if (data.general_tips && data.general_tips.length > 0) {
+            html += `
+              <div class="suggestion-card">
+                <h3>💡 Peer Wisdom</h3>
+                <p style="color: #666; font-size: 0.9em;">General wellbeing tips from the survey:</p>
+                <ul class="suggestion-list">
+                  ${data.general_tips.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }
+
+          html += '</div>'; // Close suggestions-container
+
+          // Add disclaimer
+          html += `
+            <div style="margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 0.85em; color: #666; text-align: center;">
+              <strong>📌 Note:</strong> These suggestions are based on your emotion patterns and survey responses from peers experiencing similar emotions. 
+              They are not medical advice. If you're struggling with mental health, please consult a healthcare professional.
+            </div>
+          `;
+
+          wellbeingDiv.innerHTML = html;
+
+        } catch (error) {
+          console.error('Error loading wellbeing suggestions:', error);
+          wellbeingDiv.innerHTML = `
+            <div class="wellbeing-header">
+              <span class="wellbeing-icon">🧠</span>
+              <h2>Wellbeing Suggestions</h2>
+            </div>
+            <div class="context-message" style="background: #f8d7da; color: #721c24;">
+              <p>⚠️ Could not load wellbeing suggestions. Please ensure the dashboard server is running.</p>
+              <p style="font-size: 0.85em;">Error: ${error.message}</p>
             </div>
           `;
         }
