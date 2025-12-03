@@ -124,11 +124,17 @@ def create_user_dashboard(user_id, user_data, output_folder):
     plt.close()
     
     # 3. Confidence trends
-    confidences = [row[3] for row in user_data]
+    # Filter out None values and ensure they are floats
+    confidences = [float(row[3]) if row[3] is not None else 0.0 for row in user_data]
     
     plt.figure(figsize=(14, 6))
+    if confidences:
+        avg_conf = sum(confidences)/len(confidences)
+    else:
+        avg_conf = 0.0
+
     plt.plot(timestamps, confidences, alpha=0.7, linewidth=1, color='green', marker='o', markersize=2)
-    plt.axhline(y=sum(confidences)/len(confidences), color='red', linestyle='--', label=f'Avg: {sum(confidences)/len(confidences):.3f}')
+    plt.axhline(y=avg_conf, color='red', linestyle='--', label=f'Avg: {avg_conf:.3f}')
     plt.xlabel('Time', fontsize=12)
     plt.ylabel('Confidence', fontsize=12)
     plt.title(f'Prediction Confidence - {user_id}', fontsize=14, fontweight='bold')

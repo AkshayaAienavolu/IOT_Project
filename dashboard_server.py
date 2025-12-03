@@ -292,9 +292,25 @@ def serve_webapp_static(filename):
         return send_from_directory('webapp', filename)
     return "File not found", 404
 
+import threading
+import time
+
+# ... existing code ...
+
+def background_regenerator():
+    """Regenerate dashboards every 2 minutes in the background"""
+    while True:
+        print(f"[{datetime.now()}] Regenerating dashboards...")
+        regenerate_dashboards()
+        time.sleep(120)
+
 if __name__ == '__main__':
     # Create dashboards directory if it doesn't exist
     os.makedirs(DASHBOARD_DIR, exist_ok=True)
+    
+    # Start background thread for dashboard generation
+    thread = threading.Thread(target=background_regenerator, daemon=True)
+    thread.start()
     
     print(f"Dashboard Server Starting...")
     print(f"Database: {DB_PATH}")
