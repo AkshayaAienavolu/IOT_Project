@@ -201,7 +201,7 @@ async function predictEmotion(faceCanvas, bbox = null) {
     try {
       if (typeof window.publishEmotionEvent === 'function') {
         const top = results[0];
-        const userId = (window.MQTT_CONFIG && window.MQTT_CONFIG.CLIENT_ID) ? window.MQTT_CONFIG.CLIENT_ID : null;
+        const userId = (typeof window.ensureClientId === 'function') ? window.ensureClientId() : null;
         // publish: (userId, emotion, confidence, bbox)
         window.publishEmotionEvent(userId, top.label, top.prob, bbox);
       }

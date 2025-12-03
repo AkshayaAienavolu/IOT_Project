@@ -11,8 +11,9 @@ window.MQTT_CONFIG = {
   USERNAME: "REPLACE_WITH_USERNAME",
   PASSWORD: "REPLACE_WITH_PASSWORD",
 
-  // Client id used by the browser; change if you want multiple browser clients
-  CLIENT_ID: "fer_webapp_" + Math.random().toString(16).slice(2, 10),
+  // Client ID will be auto-generated and persisted by mqtt_client.js
+  // Leave this empty or undefined for automatic ID management
+  CLIENT_ID: null,
 
   // Topic to publish emotion events to (adjust if desired)
   TOPIC: "fer/events",
