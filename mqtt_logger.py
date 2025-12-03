@@ -21,7 +21,7 @@ import ssl
 
 import paho.mqtt.client as mqtt
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s')
 
 # === Configuration ===
 # You can override these with environment variables.
