@@ -345,8 +345,9 @@ def background_regenerator():
     while True:
         print(f"[{datetime.now()}] Regenerating dashboards...")
         result = regenerate_dashboards()
-        if not result['success']:
-            print(f"❌ Dashboard generation failed:\n{result['stderr']}")
+        if not result.get('success', False):
+            error_msg = result.get('stderr', result.get('error', 'Unknown error'))
+            print(f"❌ Dashboard generation failed:\n{error_msg}")
         else:
             print(f"✅ Dashboards updated successfully")
         time.sleep(120)
