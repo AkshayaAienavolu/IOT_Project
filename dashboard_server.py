@@ -21,7 +21,19 @@ CURRENT_DIR_DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fer_e
 if os.path.exists(CURRENT_DIR_DB):
     DB_PATH = os.getenv('FER_DB', CURRENT_DIR_DB)
 else:
-    DB_PATH = os.getenv('FER_DB', '/home/pi/fer_events.db')
+    # Fallback to checking if it's in the parent directory or home
+    PARENT_DB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fer_events.db')
+    HOME_DB = os.path.expanduser('~/fer_events.db')
+    
+    if os.path.exists(PARENT_DB):
+        DB_PATH = PARENT_DB
+    elif os.path.exists(HOME_DB):
+        DB_PATH = HOME_DB
+    else:
+        # Default to current dir even if not exists yet
+        DB_PATH = CURRENT_DIR_DB
+
+print(f"Using Database at: {DB_PATH}")
 
 DASHBOARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboards')
 DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_per_user.py')
