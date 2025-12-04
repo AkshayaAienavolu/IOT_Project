@@ -158,10 +158,10 @@ class WellbeingAdvisor:
             
             cutoff = (datetime.now() - timedelta(days=days)).isoformat()
             cursor.execute('''
-                SELECT emotion, timestamp
-                FROM emotions
-                WHERE user_id = ? AND timestamp > ?
-                ORDER BY timestamp DESC
+                SELECT emotion, ts_received
+                FROM events
+                WHERE user_id = ? AND ts_received > ?
+                ORDER BY ts_received DESC
                 LIMIT 50
             ''', (user_id, cutoff))
             
@@ -239,10 +239,10 @@ class WellbeingAdvisor:
             
             cutoff = (datetime.now() - timedelta(days=days)).isoformat()
             cursor.execute('''
-                SELECT emotion, confidence, timestamp
-                FROM emotions
-                WHERE user_id = ? AND timestamp > ?
-                ORDER BY timestamp DESC
+                SELECT emotion, confidence, ts_received
+                FROM events
+                WHERE user_id = ? AND ts_received > ?
+                ORDER BY ts_received DESC
             ''', (user_id, cutoff))
             
             rows = cursor.fetchall()
