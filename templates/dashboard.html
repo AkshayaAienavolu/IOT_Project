@@ -219,8 +219,19 @@
         }
         
         async function refreshUsers() {
-            showStatus('Refreshing user list...', 'info');
+            showStatus('Regenerating dashboards and refreshing...', 'info');
             try {
+                // First regenerate dashboards
+                const regenResponse = await fetch('/api/regenerate', {
+                    method: 'POST'
+                });
+                const regenResult = await regenResponse.json();
+                
+                if (!regenResult.success) {
+                    showStatus('Warning: Dashboard regeneration had issues', 'error');
+                }
+                
+                // Then fetch updated user list
                 const response = await fetch('/api/users');
                 const users = await response.json();
                 
@@ -245,9 +256,9 @@
                     `).join('');
                 }
                 
-                showStatus('User list refreshed!', 'success');
+                showStatus('Dashboards updated and refreshed!', 'success');
             } catch (error) {
-                showStatus('Error refreshing users: ' + error.message, 'error');
+                showStatus('Error refreshing: ' + error.message, 'error');
             }
         }
         
@@ -260,7 +271,8 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showStatus('Dashboards regenerated successfully!', 'success');
+                    showStatus('Dashboards regenerated successfully! Reloading...', 'success');
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     showStatus('Error regenerating dashboards: ' + (result.error || result.stderr), 'error');
                 }
@@ -268,6 +280,12 @@
                 showStatus('Error regenerating dashboards: ' + error.message, 'error');
             }
         }
+        
+        // Auto-refresh dashboards every 2 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing dashboards...');
+            refreshUsers();
+        }, 120000); // 2 minutes
     </script>
 </body>
 </html>

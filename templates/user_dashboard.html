@@ -198,10 +198,11 @@
             status.textContent = 'Regenerating dashboards...';
             
             try {
-                // Trigger dashboard regeneration
+                // Trigger dashboard regeneration for THIS user only (faster)
                 const response = await fetch('/api/regenerate', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: '{{ user_id }}' })
                 });
                 
                 const result = await response.json();
@@ -222,8 +223,9 @@
         }
         
         // Auto-refresh page every 2 minutes to show latest data
-        setTimeout(() => {
-            location.reload();
+        setInterval(() => {
+            console.log('Auto-refreshing user dashboard...');
+            refreshDashboard();
         }, 120000); // 2 minutes
         
         // Show "Back to Users" button only when accessed from local server (admin)

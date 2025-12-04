@@ -7,6 +7,7 @@ Generates comprehensive mental-state reports
 import sqlite3
 import sys
 import os
+import argparse
 from datetime import datetime, timedelta
 import matplotlib
 matplotlib.use('Agg')
@@ -17,7 +18,13 @@ from collections import Counter
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from wellbeing_advisor import WellbeingAdvisor
 
-DB_PATH = sys.argv[1] if len(sys.argv) > 1 else 'fer_events.db'
+# Parse arguments
+parser = argparse.ArgumentParser(description='Generate integrated dashboards')
+parser.add_argument('db_path', nargs='?', default='fer_events.db', help='Path to SQLite database')
+parser.add_argument('--user', help='Generate for specific user ID only')
+args = parser.parse_args()
+
+DB_PATH = args.db_path
 OUTPUT_DIR = 'dashboards'
 
 def match_emotion_with_sensor(days=7):
@@ -329,10 +336,18 @@ def main():
     users = {}
     for data in matched_data:
         user_id = data['user_id']
+        # Filter if specific user requested
+        if args.user and user_id != args.user:
+            continue
+            
         if user_id not in users:
             users[user_id] = []
         users[user_id].append(data)
     
+    if args.user and not users:
+        print(f"⚠️  User {args.user} not found in recent data.")
+        return
+
     print(f"✓ Processing {len(users)} users")
     print()
     

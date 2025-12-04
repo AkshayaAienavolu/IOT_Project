@@ -99,17 +99,21 @@ def find_best_user_match(requested_id):
         print(f"Error in find_best_user_match: {e}")
     return None
 
-def regenerate_dashboards():
-    """Regenerate all dashboard charts (now uses integrated dashboard)"""
+def regenerate_dashboards(user_id=None):
+    """Regenerate dashboard charts (now uses integrated dashboard)"""
     try:
+        cmd = [sys.executable, DASHBOARD_SCRIPT, DB_PATH]
+        if user_id:
+            cmd.extend(['--user', user_id])
+            
         # Run the INTEGRATED dashboard generator (emotion + sensor data)
         # This creates comprehensive mental-state reports with vitals
         result = subprocess.run(
-            ['python3', DASHBOARD_SCRIPT, DB_PATH],
+            cmd,
             cwd=BASE_DIR,
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=300
         )
         return {
             'success': result.returncode == 0,
@@ -137,7 +141,10 @@ def api_users():
 @app.route('/api/regenerate', methods=['POST'])
 def api_regenerate():
     """API endpoint to regenerate dashboards"""
-    result = regenerate_dashboards()
+    data = request.get_json(silent=True) or {}
+    user_id = data.get('user_id')
+    
+    result = regenerate_dashboards(user_id)
     return jsonify(result)
 
 @app.route('/api/debug')
