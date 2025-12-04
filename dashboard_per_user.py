@@ -18,6 +18,10 @@ matplotlib.use('Agg')  # Set backend to non-interactive (headless)
 import matplotlib.pyplot as plt
 from collections import Counter
 
+# Import wellbeing advisor
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+from wellbeing_advisor import WellbeingAdvisor
+
 DB_PATH = sys.argv[1] if len(sys.argv) > 1 else 'fer_events.db'
 OUTPUT_DIR = 'dashboards'
 
@@ -207,7 +211,18 @@ def create_user_dashboard(user_id, user_data, output_folder):
                 pct = (count / len(week_emotions)) * 100
                 f.write(f'  {emotion:10s}: {count:5d} ({pct:5.1f}%)\n')
             
-            f.write(f'\n💡 Recommendation:\n{advice}\n')
+            # Get wellbeing suggestions instead of recommendation
+            f.write(f'\n💡 Wellbeing Suggestions:\n')
+            try:
+                advisor = WellbeingAdvisor(DB_PATH)
+                report = advisor.generate_wellbeing_report(user_id)
+                if report['status'] == 'success':
+                    for tip in report['primary_suggestions']['tips'][:3]:
+                        f.write(f'   • {tip}\n')
+                else:
+                    f.write(f'{advice}\n')
+            except Exception as e:
+                f.write(f'{advice}\n')
         else:
             f.write('Insufficient data for 7-day assessment.\n')
         
@@ -288,7 +303,17 @@ def main():
                 f.write(f'='*60 + '\n\n')
                 f.write(f'Mental State: {mental_state}\n')
                 f.write(f'Total Events: {len(week_emotions)}\n\n')
-                f.write(f'Recommendation:\n{advice}\n')
+                f.write(f'Wellbeing Suggestions:\n')
+                try:
+                    advisor = WellbeingAdvisor(DB_PATH)
+                    report = advisor.generate_wellbeing_report(user_id)
+                    if report['status'] == 'success':
+                        for tip in report['primary_suggestions']['tips'][:3]:
+                            f.write(f'   • {tip}\n')
+                    else:
+                        f.write(f'{advice}\n')
+                except Exception as e:
+                    f.write(f'{advice}\n')
             continue
         
         # User has data in last 2 days - create full dashboard
