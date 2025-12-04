@@ -160,7 +160,8 @@
             </div>
             <div class="controls">
                 <a href="/" class="btn">← Back to Users</a>
-                <button class="btn" onclick="location.reload()">🔄 Refresh</button>
+                <button class="btn" id="refreshBtn" onclick="refreshDashboard()">🔄 Refresh</button>
+                <span id="refreshStatus" style="margin-left: 10px; color: #666; font-size: 0.9em;"></span>
             </div>
         </div>
         
@@ -184,5 +185,45 @@
         </div>
         {% endif %}
     </div>
+    
+    <script>
+        async function refreshDashboard() {
+            const btn = document.getElementById('refreshBtn');
+            const status = document.getElementById('refreshStatus');
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.textContent = '⏳ Refreshing...';
+            status.textContent = 'Regenerating dashboards...';
+            
+            try {
+                // Trigger dashboard regeneration
+                const response = await fetch('/api/regenerate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.textContent = '✓ Updated! Reloading...';
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    status.textContent = '✗ Update failed';
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Refresh';
+                }
+            } catch (error) {
+                status.textContent = '✗ Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = '🔄 Refresh';
+            }
+        }
+        
+        // Auto-refresh page every 2 minutes to show latest data
+        setTimeout(() => {
+            location.reload();
+        }, 120000); // 2 minutes
+    </script>
 </body>
 </html>

@@ -99,12 +99,12 @@ def find_best_user_match(requested_id):
     return None
 
 def regenerate_dashboards():
-    """Regenerate all dashboard charts"""
+    """Regenerate all dashboard charts (now uses integrated dashboard)"""
     try:
-        # Run the dashboard generator in the same directory as this script
-        # This ensures 'dashboards' folder is created in the correct place
+        # Run the INTEGRATED dashboard generator (emotion + sensor data)
+        # This creates comprehensive mental-state reports with vitals
         result = subprocess.run(
-            ['python3', DASHBOARD_SCRIPT, DB_PATH],
+            ['python3', 'dashboard_integrated.py', DB_PATH],
             cwd=BASE_DIR,
             capture_output=True,
             text=True,
