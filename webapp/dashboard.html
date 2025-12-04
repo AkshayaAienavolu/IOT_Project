@@ -392,6 +392,18 @@
           } catch(e) { console.error('Failed to save ID', e); }
       }
       
+      // REDIRECT to server-side dashboard with integrated mental-state report
+      // This ensures users see the same dashboard as on the server
+      const PI_IP = '10.221.24.195';
+      const PI_PORT = '5000';
+      const serverDashboardUrl = `http://${PI_IP}:${PI_PORT}/user/${userId}`;
+      
+      console.log('[Dashboard] Redirecting to server-side dashboard:', serverDashboardUrl);
+      window.location.replace(serverDashboardUrl);
+      
+      // Stop execution - everything below won't run after redirect
+      if (false) {
+      
       document.getElementById('userIdDisplay').textContent = userId;
 
       // Dashboard API base URL
