@@ -180,9 +180,9 @@
                 }
             } catch(e) { console.error(e); }
 
-            // Construct URL: http://<PI_IP>:5000/my-dashboard?user_id=<ID>
-            // We use the Pi's HTTP server directly to avoid Mixed Content issues
-            const dashboardUrl = `http://${PI_IP}:${PI_PORT}/my-dashboard?user_id=${userId}`;
+            // Construct URL: http://<PI_IP>:5000/user/<user_id>
+            // This shows the integrated mental-state report with emotion + sensor data
+            const dashboardUrl = `http://${PI_IP}:${PI_PORT}/user/${userId}`;
             btn.href = dashboardUrl;
             console.log('Dashboard Link set to:', dashboardUrl);
 
