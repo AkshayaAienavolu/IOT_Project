@@ -29,7 +29,8 @@ DB_PATH = os.getenv('FER_DB', os.path.join(BASE_DIR, 'fer_events.db'))
 print(f"Using Database at: {DB_PATH}")
 
 DASHBOARD_DIR = os.path.join(BASE_DIR, 'dashboards')
-DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_per_user.py')
+# Use integrated dashboard that combines emotion + sensor data
+DASHBOARD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard_integrated.py')
 
 # Initialize Wellbeing Advisor
 wellbeing_advisor = WellbeingAdvisor(db_path=DB_PATH)
@@ -104,7 +105,7 @@ def regenerate_dashboards():
         # Run the INTEGRATED dashboard generator (emotion + sensor data)
         # This creates comprehensive mental-state reports with vitals
         result = subprocess.run(
-            ['python3', 'dashboard_integrated.py', DB_PATH],
+            ['python3', DASHBOARD_SCRIPT, DB_PATH],
             cwd=BASE_DIR,
             capture_output=True,
             text=True,
