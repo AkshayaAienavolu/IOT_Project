@@ -253,12 +253,12 @@ class WellbeingAdvisor:
             
             emotions = [row[0] for row in rows]
             confidences = [row[1] for row in rows]
-            timestamps = [datetime.fromisoformat(row[2]) for row in rows]
+            timestamps = [datetime.fromisoformat(row[2].replace('Z', '')) for row in rows]
             
             emotion_counts = Counter(emotions)
             most_common = emotion_counts.most_common(1)[0][0]
             
-            # Recent trend
+            # Recent trend (make timezone-naive for comparison)
             recent_cutoff = datetime.now() - timedelta(hours=24)
             recent_emotions = [e for e, ts in zip(emotions, timestamps) if ts > recent_cutoff]
             

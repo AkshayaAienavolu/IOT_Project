@@ -274,21 +274,36 @@ def create_integrated_report(user_id, matched_data, analysis, output_folder):
         try:
             report = advisor.generate_wellbeing_report(user_id)
             if report['status'] == 'success':
-                # Add physiological context
+                # Add physiological context first
                 if analysis["avg_hr"] > 90:
                     f.write('   • ❤️  Your heart rate is elevated. Try deep breathing exercises.\n')
                 if analysis["avg_spo2"] < 95:
                     f.write('   • 🫁 Low oxygen levels detected. Ensure proper ventilation and consider consulting a doctor.\n')
                 
-                # Emotion-based suggestions
+                # Add emotion-based suggestions from survey
                 for tip in report['primary_suggestions']['tips'][:3]:
                     f.write(f'   • {tip}\n')
+                
+                # Add health maintenance tips based on overall state
+                if analysis["state"] == "Excellent" or analysis["state"] == "Good":
+                    f.write('   • 🌟 Your metrics look great! Keep up your healthy habits.\n')
+                    f.write('   • 📊 Regular monitoring helps catch changes early.\n')
             else:
-                f.write('   • Continue monitoring your health metrics regularly.\n')
-                f.write('   • Stay hydrated and maintain regular sleep schedule.\n')
+                # Fallback suggestions based on vitals and emotions
+                if analysis["avg_hr"] > 90:
+                    f.write('   • ❤️  Elevated heart rate detected. Practice relaxation techniques.\n')
+                if analysis["avg_spo2"] < 95:
+                    f.write('   • 🫁 Monitor oxygen levels and consult a healthcare provider.\n')
+                f.write('   • 💧 Stay hydrated throughout the day.\n')
+                f.write('   • 🧘 Maintain regular sleep and exercise routines.\n')
         except Exception as e:
-            f.write('   • Maintain healthy lifestyle habits.\n')
-            f.write('   • Monitor your vitals regularly.\n')
+            # Ultimate fallback
+            if analysis["avg_hr"] > 90:
+                f.write('   • ❤️  Your heart rate is elevated. Try deep breathing exercises.\n')
+            if analysis["avg_spo2"] < 95:
+                f.write('   • 🫁 Low oxygen levels detected. Ensure proper ventilation.\n')
+            f.write('   • 💧 Stay hydrated and maintain regular sleep schedule.\n')
+            f.write('   • 📊 Continue monitoring your health metrics regularly.\n')
         
         f.write('\n')
         f.write('=' * 70 + '\n')

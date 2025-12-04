@@ -192,9 +192,17 @@ def user_dashboard(user_id):
         else:
             return f"No dashboard found for user {user_id}. Click 'Regenerate Dashboards' to create charts.", 404
 
-    # Get list of chart files
+    # Get list of chart files (including integrated sensor charts)
     charts = []
-    chart_files = ['emotion_distribution.png', 'timeline.png', 'confidence.png', 'hourly_activity.png']
+    chart_files = [
+        'integrated_timeline.png',      # Integrated: HR + Emotions
+        'hr_by_emotion.png',            # Integrated: HR distribution by emotion
+        'spo2_timeline.png',            # Integrated: Blood oxygen
+        'emotion_distribution.png',     # Original: Emotion counts
+        'timeline.png',                 # Original: Emotion timeline
+        'confidence.png',               # Original: Confidence
+        'hourly_activity.png'           # Original: Activity by hour
+    ]
     for chart_file in chart_files:
         chart_path = os.path.join(user_dir, chart_file)
         if os.path.exists(chart_path):
