@@ -502,22 +502,20 @@
             `;
           }
 
-          // Summary text
-          if (data.summary) {
-            html += `
-              <div class="summary-card">
-                <h2>📈 Summary</h2>
-                <div class="summary-text">${data.summary}</div>
-              </div>
-            `;
-          }
+          contentDiv.innerHTML = html;
 
+          // Load wellbeing suggestions BEFORE charts (above charts)
+          await loadWellbeingSuggestions(userId);
+
+          // Now add charts below wellbeing section
+          let chartsHtml = '';
+          
           // Charts
           if (data.charts && data.charts.length > 0) {
-            html += '<div class="charts-grid">';
+            chartsHtml += '<div class="charts-grid">';
             const timestamp = new Date().getTime(); // Cache buster
             data.charts.forEach(chart => {
-              html += `
+              chartsHtml += `
                 <div class="chart-card">
                   <div class="chart-title">${chart.name}</div>
                   <img src="${DASHBOARD_API}${chart.url}?t=${timestamp}" 
@@ -527,9 +525,9 @@
                 </div>
               `;
             });
-            html += '</div>';
+            chartsHtml += '</div>';
           } else {
-            html += `
+            chartsHtml += `
               <div class="no-data-state">
                 <p>No charts available yet. Charts are generated every 5 minutes.</p>
                 <p style="margin-top: 10px;">
@@ -539,10 +537,8 @@
             `;
           }
 
-          contentDiv.innerHTML = html;
-
-          // Load wellbeing suggestions after main dashboard
-          loadWellbeingSuggestions(userId);
+          // Append charts after wellbeing section
+          contentDiv.innerHTML += chartsHtml;
 
         } catch (error) {
           console.error('Error loading dashboard:', error);
@@ -625,7 +621,7 @@
           let html = `
             <div class="wellbeing-header">
               <span class="wellbeing-icon">🧠</span>
-              <h2>Context-Aware Wellbeing Guide</h2>
+              <h2>Wellbeing Suggestions</h2>
               <span class="emotion-badge">${data.patterns.most_common_emotion}</span>
             </div>
           `;

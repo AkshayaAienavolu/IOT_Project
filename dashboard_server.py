@@ -180,46 +180,9 @@ def serve_dashboard(filename):
 
 @app.route('/user/<user_id>')
 def user_dashboard(user_id):
-    """Display dashboard for specific user"""
-    # Prefer exact folder, otherwise try to find a best match by suffix
-    user_dir = os.path.join(DASHBOARD_DIR, user_id)
-    displayed_user_id = user_id
-    if not os.path.exists(user_dir):
-        matched = find_best_user_match(user_id)
-        if matched and matched != user_id:
-            user_dir = os.path.join(DASHBOARD_DIR, matched)
-            displayed_user_id = matched
-        else:
-            return f"No dashboard found for user {user_id}. Click 'Regenerate Dashboards' to create charts.", 404
-
-    # Get list of chart files
-    charts = []
-    chart_files = ['emotion_distribution.png', 'timeline.png', 'confidence.png', 'hourly_activity.png']
-    for chart_file in chart_files:
-        chart_path = os.path.join(user_dir, chart_file)
-        if os.path.exists(chart_path):
-            charts.append({
-                'name': chart_file.replace('.png', '').replace('_', ' ').title(),
-                'url': f'/dashboards/{displayed_user_id}/{chart_file}'
-            })
-
-    # Read summary text if exists
-    summary_path = os.path.join(user_dir, 'summary.txt')
-    summary = None
-    if os.path.exists(summary_path):
-        with open(summary_path, 'r') as f:
-            summary = f.read()
-
-    # If we matched to a different id, add a small notice
-    if displayed_user_id != user_id:
-        note = f"Note: showing data for '{displayed_user_id}' which closely matches your id '{user_id}'." \
-               " If you believe this is incorrect, please contact the admin."
-        summary = (note + '\n\n' + summary) if summary else note
-
-    return render_template('user_dashboard.html', 
-                          user_id=displayed_user_id, 
-                          charts=charts, 
-                          summary=summary)
+    """Redirect to new webapp dashboard with context-aware wellbeing suggestions"""
+    from flask import redirect
+    return redirect(f'/my-dashboard?user_id={user_id}', code=302)
 
 @app.route('/api/user/<user_id>/summary')
 def api_user_summary(user_id):
