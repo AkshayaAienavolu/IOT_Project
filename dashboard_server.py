@@ -301,7 +301,16 @@ def api_user_summary(user_id):
         # Check if charts exist
         user_dir = os.path.join(DASHBOARD_DIR, user_id)
         charts = []
-        chart_files = ['emotion_distribution.png', 'timeline.png', 'confidence.png', 'hourly_activity.png']
+        # Include integrated sensor charts + original emotion charts
+        chart_files = [
+            'integrated_timeline.png',      # Integrated: HR + Emotions
+            'hr_by_emotion.png',            # Integrated: HR distribution by emotion
+            'spo2_timeline.png',            # Integrated: Blood oxygen
+            'emotion_distribution.png',     # Original: Emotion counts
+            'timeline.png',                 # Original: Emotion timeline
+            'confidence.png',               # Original: Confidence
+            'hourly_activity.png'           # Original: Activity by hour
+        ]
         for chart_file in chart_files:
             chart_path = os.path.join(user_dir, chart_file)
             if os.path.exists(chart_path):
@@ -353,12 +362,6 @@ def camera_app():
 @app.route('/my-dashboard')
 def my_dashboard_app():
     """Serve the personal dashboard app (dashboard.html)"""
-    # Check if user_id is provided in query params
-    user_id = request.args.get('user_id')
-    if user_id:
-        # Redirect to the server-side integrated dashboard
-        return redirect(url_for('user_dashboard', user_id=user_id))
-        
     return send_from_directory('webapp', 'dashboard.html')
 
 @app.route('/<path:filename>')
