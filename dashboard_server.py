@@ -203,48 +203,23 @@ def user_dashboard(user_id):
                 'url': f'/dashboards/{displayed_user_id}/{chart_file}'
             })
 
-    # Get wellbeing suggestions instead of summary
-    wellbeing_text = None
-    try:
-        report = wellbeing_advisor.generate_wellbeing_report(displayed_user_id)
-        if report['status'] == 'success':
-            # Format wellbeing report as text
-            lines = []
-            lines.append("=" * 70)
-            lines.append("    WELLBEING SUGGESTIONS")
-            lines.append("=" * 70)
-            lines.append("")
-            
-            for insight in report['insights']:
-                lines.append(insight)
-            lines.append("")
-            
-            lines.append(f"💡 {report['primary_suggestions']['title']}")
-            for tip in report['primary_suggestions']['tips']:
-                lines.append(f"   • {tip}")
-            lines.append("")
-            
-            if report['recent_suggestions']['emotion'] != report['primary_suggestions']['emotion']:
-                lines.append(f"⚡ {report['recent_suggestions']['title']}")
-                for tip in report['recent_suggestions']['tips']:
-                    lines.append(f"   • {tip}")
-                lines.append("")
-            
-            wellbeing_text = "\n".join(lines)
-    except Exception as e:
-        print(f"Error generating wellbeing suggestions: {e}")
-        wellbeing_text = None
+    # Read summary text if exists (contains wellbeing suggestions)
+    summary_path = os.path.join(user_dir, 'summary.txt')
+    summary = None
+    if os.path.exists(summary_path):
+        with open(summary_path, 'r') as f:
+            summary = f.read()
 
     # If we matched to a different id, add a small notice
     if displayed_user_id != user_id:
         note = f"Note: showing data for '{displayed_user_id}' which closely matches your id '{user_id}'." \
                " If you believe this is incorrect, please contact the admin."
-        wellbeing_text = (note + "\n\n" + wellbeing_text) if wellbeing_text else note
+        summary = (note + '\n\n' + summary) if summary else note
 
     return render_template('user_dashboard.html', 
                           user_id=displayed_user_id, 
                           charts=charts, 
-                          summary=wellbeing_text)
+                          summary=summary)
 
 @app.route('/api/user/<user_id>/summary')
 def api_user_summary(user_id):
