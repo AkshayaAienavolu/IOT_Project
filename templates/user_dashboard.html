@@ -155,11 +155,12 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1>📊 User Dashboard</h1>
+                <h1>📊 My Dashboard</h1>
                 <div class="user-id-display">{{ user_id }}</div>
             </div>
             <div class="controls">
-                <a href="/" class="btn">← Back to Users</a>
+                <!-- Show "Back to Users" only when accessed from server root (admin) -->
+                <a href="/" class="btn admin-only" id="backBtn" style="display:none;">← Back to Users</a>
                 <button class="btn" id="refreshBtn" onclick="refreshDashboard()">🔄 Refresh</button>
                 <span id="refreshStatus" style="margin-left: 10px; color: #666; font-size: 0.9em;"></span>
             </div>
@@ -224,6 +225,20 @@
         setTimeout(() => {
             location.reload();
         }, 120000); // 2 minutes
+        
+        // Show "Back to Users" button only when accessed from local server (admin)
+        // Hide it when accessed from external/camera app links
+        window.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.getElementById('backBtn');
+            const referrer = document.referrer;
+            
+            // Show back button if came from the main dashboard page (server admin)
+            const fromMainDashboard = referrer.includes('5000/') && !referrer.includes('/user/');
+            
+            if (fromMainDashboard || referrer === '') {
+                backBtn.style.display = 'inline-block';
+            }
+        });
     </script>
 </body>
 </html>
